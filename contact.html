@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopline page d'Acceuil</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/bootstrap.bundle.js"></script>
+</head>
+
+<body>
+    <!-- Debut menu de navigation  -->
+    <nav class="navbar navbar-expand-lg bg-primary navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">CODING SERVICES</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">ACCEUIL</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="services.html">SERVICES</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="a propos.html">A PROPOS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">CONTACT</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="login.html">CONNEXION</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">INSCRIPTION</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- fin menu -->
+    <!-- debut section caroussel -->
+    <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="img/banner.jpg" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="img/banner1.png" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="img/banner.jpg" class="d-block w-100" alt="...">
+            </div>
+        </div>
+    </div>
+    <!-- fin debut section caroussel -->
+    <!-- debut controle de formulaire -->
+    <div class="container">
+        <div class="row my-5">
+            <div class="col-md-6" style="margin-left: 150px;">
+                <h1>Nous Envoyé Un Message</h1>
+                <form action="">
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"></label>
+                        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Saisir Votre Nom">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"></label>
+                        <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Saisir Votre Adresse email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"></label>
+                        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Objet Du Message">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">Message</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="col-4">
+                <h1>Contact</h1>
+                <p>Quatier: Lambanyi</p>
+                <p>Commune: Ratoma</p>
+                <p>Ville: Conakry</p>
+                <p>Email: clshop@gmail.com</p>
+                <p>Telephone: +224 620 00 00 00</p>
+            </div>
+            
+        </div>
+    </div>
+    <!-- fin controle de formulaire -->

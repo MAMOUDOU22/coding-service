@@ -1,0 +1,53 @@
+body{
+    background-color: red;
+    margin: 0;
+    padding: 0;
+}
+
+.container{
+    background-color: white;
+    width: 500px;
+    margin: auto;
+    margin-top: 100px;
+    padding: 20px;
+}
+
+label{
+    font-size: 1.3em;
+    font-style: italic;
+}
+
+input{
+    width: 90%;
+    font-size: 1.2em;
+    padding: 10px;
+}
+
+.password{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+button{
+    background-color: darkblue;
+    color: white;
+    font-size: 1.5em;
+    padding: 10px;
+    cursor: pointer;
+    width: 95%;
+}
+
+button:hover{
+    background-color: whitesmoke;
+    color: darkblue;
+    cursor: pointer;
+}
+
+
+h1{
+    float: left;
+}
+
+p.up{
+    float: right;
+}

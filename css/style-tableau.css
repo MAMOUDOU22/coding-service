@@ -1,0 +1,35 @@
+body{
+    background-color: rgb(145, 155, 150);
+}
+
+.container{
+    background-color: aliceblue;
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    margin-top: 100px;
+}
+
+h2{
+    text-align: center;
+    color: darkblue;
+    font-size: 2em;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+table{
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+th, td{
+    border: 2px solid #ddd;
+    padding: 8px;
+}
+
+thead{
+    background-color: #000;
+    color: #fff;
+}
