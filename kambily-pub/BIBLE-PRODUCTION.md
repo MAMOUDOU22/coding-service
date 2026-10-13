@@ -13,10 +13,11 @@ Dossier de production : direction créative, voix off, storyboard, ressources, d
 | Minutage de la voix, source unique pilotant le montage | ✅ `animatic/vo-cues.js` |
 | Storyboard de production plan par plan | ✅ §5 et planches `out/planches/` |
 | **Animatique animée**, rendue en vidéo (16:9 et 9:16, 52 s et 15 s) | ✅ `out/*.mp4`. Animation des interfaces complète, plans tournés figurés par des emplacements annotés |
-| Essai voix 0–13 s calé à l'image, avec prompteur | ✅ Image et prompteur : `out/kambily-essai-voix-prompteur-16x9.mp4`. **Sans voix** (voir ci-dessous) |
+| Essai voix 0–13 s calé à l'image, avec prompteur | ✅ Image et prompteur : `out/kambily-essai-voix-prompteur-16x9.mp4`. **Sans aucun son**, volontairement : la comédienne enregistre à l'image sans être gênée |
 | Sous-titres synchronisés (.srt) | ✅ `out/kambily-voix-off-50s.srt`, `…-15s.srt` |
 | **Piste voix off** | ❌ **Non produite.** L'environnement de travail ne donne accès ni à une comédienne ni à un moteur de synthèse vocale. Aucune voix n'a été enregistrée ni générée. |
-| Musique, effets sonores, mixage final | ❌ Non produits (droits commerciaux nécessaires). Spécifications au §7 |
+| Maquette sonore (musique **temporaire**, SFX, logo sonore) | ✅ Intégrée aux 4 MP4 de l'animatique. Composition originale générée par programme (`render/audio_temp.py`), sans échantillon ni morceau existant, donc sans problème de droits. **Ce n'est pas la musique finale** : elle sert à juger le rythme. Mix −14 LUFS, crêtes −1 dBFS |
+| Musique finale et mixage final | ❌ À produire (§7). Pas de ducking dans la maquette, faute de voix |
 | Prises de vues réelles (3 plans) | ❌ À tourner. Fiche de tournage au §9 |
 | Film final | ❌ **Pas encore réalisé.** L'animatique sert de référence de montage, ce n'est pas le film. |
 
@@ -396,7 +397,9 @@ kambily-pub/
 │   ├── all.sh                   ← rend toutes les vidéos
 │   ├── render.mjs               ← rendu image par image (Playwright + ffmpeg)
 │   ├── stills.mjs               ← planches du storyboard
-│   └── srt.mjs                  ← sous-titres .srt
+│   ├── srt.mjs                  ← sous-titres .srt
+│   ├── audio_temp.py            ← maquette sonore (musique temporaire, SFX, logo sonore)
+│   └── mux.sh                   ← ajoute la maquette sonore aux MP4 (−14 LUFS)
 └── out/
     ├── kambily-animatique-master-16x9.mp4 / -9x16.mp4   (52 s)
     ├── kambily-animatique-15-16x9.mp4 / -9x16.mp4       (15 s)
@@ -406,4 +409,4 @@ kambily-pub/
 ```
 
 - **Visualiser :** ouvrir `animatic/index.html?format=16x9` (ou `9x16`, `&cut=15`, `&cues=1`, `&safe=1`) dans un navigateur ; un clic met en pause.
-- **Rendre :** `./render/all.sh` (nécessite Node 18+, Playwright, Chromium et ffmpeg).
+- **Rendre :** `./render/all.sh` puis `./render/mux.sh` (nécessite Node 18+, Playwright, Chromium, ffmpeg, Python 3 et numpy). Les stems WAV (musique, SFX, mix) sont écrits dans `out/audio/`.
