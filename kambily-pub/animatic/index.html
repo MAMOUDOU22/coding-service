@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kambily — Animatique</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  Animatique KAMBILY — « Les boutiques d'ici. Un seul panier. »
+  Paramètres d'URL :
+    ?format=16x9 | 9x16     (défaut 16x9)
+    &cut=master | 15        (film maître 50 s ou spot 15 s)
+    &t=12.5                 (fige l'image à 12,5 s — utilisé par le rendu)
+    &cues=1                 (prompteur voix off pour l'enregistrement à l'image)
+    &end=13                 (borne la lecture — ex. essai voix 0–13 s)
+  Sans paramètre t, l'animatique se joue en temps réel (clic = pause).
+  Les plans « PLAN TOURNÉ » sont des emplacements de prises de vues réelles :
+  ils ne sont PAS des images finales.
+-->
+<style>
+@font-face{font-family:P;src:url(assets/fonts/poppins-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:P;src:url(assets/fonts/poppins-500.woff2) format("woff2");font-weight:500}
+@font-face{font-family:P;src:url(assets/fonts/poppins-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:P;src:url(assets/fonts/poppins-700.woff2) format("woff2");font-weight:700}
+:root{
+  --teal:#048B9A; --teal-d:#036f7b; --teal-dd:#02434b;
+  --lime:#D9FF98; --lime-l:#F3FFE0; --lime-b:#BFE98A;
+  --ink:#17181A; --g1:#F2F3F3; --g2:#E6E8E8; --g3:#9AA0A3; --g4:#5E6467; --white:#fff;
+  --red:#D2453A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#000;overflow:hidden}
+body{font-family:P,Inter,system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden;background:var(--white)}
+.abs{position:absolute}
+.scene{position:absolute;inset:0;opacity:0}
+.c{display:flex;align-items:center;justify-content:center}
+
+/* ---------- Plans tournés (placeholders honnêtes) ---------- */
+.plate{position:absolute;inset:0;overflow:hidden;background:linear-gradient(160deg,#3b3a36,#1d1f20 60%,#0f1213)}
+.plate .sun{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
+.plate .tag{position:absolute;left:48px;top:44px;font:600 22px P;letter-spacing:.12em;color:#fff;background:rgba(0,0,0,.45);
+  padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.25)}
+.plate .desc{position:absolute;left:48px;top:98px;max-width:760px;font:400 22px/1.45 P;color:rgba(255,255,255,.82);
+  background:rgba(0,0,0,.35);padding:12px 16px;border-radius:8px}
+.v .plate .desc{max-width:900px;font-size:30px;top:260px}
+.v .plate .tag{top:200px;font-size:28px}
+.silh{position:absolute;background:#0b0d0e;border-radius:48% 48% 8px 8px / 30% 30% 8px 8px}
+
+/* ---------- Typographie cinétique ---------- */
+.kt{position:absolute;font-weight:700;letter-spacing:-.02em;line-height:1.05;white-space:nowrap}
+.kt span{display:inline-block}
+.sub{position:absolute;left:50%;transform:translateX(-50%);bottom:56px;font:500 30px P;color:#fff;
+  background:rgba(10,12,13,.72);padding:8px 18px;border-radius:8px;white-space:nowrap;opacity:0}
+.v .sub{bottom:360px;font-size:38px;white-space:normal;width:880px;text-align:center}
+
+/* ---------- Téléphone ---------- */
+.phone{position:absolute;width:430px;height:900px;border-radius:64px;background:#121416;padding:14px;
+  box-shadow:0 60px 120px -30px rgba(2,40,45,.55),0 0 0 2px #2b2f33 inset}
+.phone .screen{position:relative;width:100%;height:100%;border-radius:52px;overflow:hidden;background:#fff}
+.phone .island{position:absolute;left:50%;top:26px;width:118px;height:34px;margin-left:-59px;border-radius:20px;background:#000;z-index:50}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 6px;font:600 15px P;color:#fff}
+.status.dark{color:var(--ink)}
+.hdr{background:var(--teal);color:#fff;border-radius:0 0 26px 26px;padding:0 22px 20px;position:relative}
+.hdr h1{font:600 24px P;display:flex;align-items:center;gap:14px}
+.hdr .arrow{font-size:24px;font-weight:400}
+.view{position:absolute;left:0;right:0;top:0;bottom:0;background:#fff}
+.pad{padding:16px 18px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--g1);border-radius:12px;padding:8px 12px;font:500 14px P;color:var(--ink)}
+.tile{background:var(--g1);border-radius:14px;display:flex;align-items:center;justify-content:center}
+.tile svg{width:38%;height:38%;stroke:#B8BDBF;fill:none;stroke-width:1.6}
+.muted{color:var(--g3)}
+.price{color:var(--teal);font-weight:600}
+.btn{border-radius:14px;font:600 17px P;display:flex;align-items:center;justify-content:center;height:54px}
+.btn.teal{background:var(--teal);color:#fff}
+.btn.lime{background:var(--lime);color:var(--teal-dd)}
+.btn.out{border:1.5px solid var(--g2);color:var(--teal);background:#fff}
+.avatar{width:40px;height:40px;border-radius:10px;background:var(--lime-l);border:1px solid #E3F5C8;color:var(--teal);
+  font:600 14px P;display:flex;align-items:center;justify-content:center;flex:none}
+.box{border-radius:16px;border:1.5px solid var(--g2);background:#fff}
+.radio{width:24px;height:24px;border-radius:50%;border:2px solid #C8CCCE;flex:none;position:relative}
+.radio.on{border-color:var(--teal)}
+.radio.on:after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--teal)}
+.check{width:22px;height:22px;border-radius:6px;background:var(--teal);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:78px;border-top:1px solid var(--g2);background:#fff;display:flex;justify-content:space-around;
+  align-items:center;font:500 12px P;color:var(--g3)}
+.tabbar div{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.tabbar .on{color:var(--teal)}
+.badge{position:absolute;top:-6px;right:-4px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font:600 11px P;
+  display:flex;align-items:center;justify-content:center}
+.tap{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(4,139,154,.25);
+  border:2px solid rgba(4,139,154,.6);opacity:0;z-index:60;pointer-events:none}
+
+/* ---------- Carte boutique (motif graphique) ---------- */
+.shopcard{position:absolute;display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:14px 20px 14px 14px;
+  box-shadow:0 18px 40px -16px rgba(2,60,66,.35);font:600 20px P;white-space:nowrap}
+.shopcard .avatar{width:48px;height:48px;font-size:16px}
+
+/* ---------- Divers ---------- */
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#hud{position:absolute;right:16px;top:12px;font:500 14px P;color:rgba(255,255,255,.75);background:rgba(0,0,0,.4);padding:4px 10px;border-radius:6px;z-index:999}
+.safe{position:absolute;border:2px dashed rgba(255,0,90,.55);pointer-events:none;z-index:998;display:none}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="hud"></div>
+<script src="vo-cues.js"></script>
+<script>
+/* =====================================================================
+   Paramètres
+   ===================================================================== */
+const Q = new URLSearchParams(location.search);
+const V = Q.get('format') === '9x16';
+const CUT = Q.get('cut') === '15' ? '15' : 'master';
+const W = V ? 1080 : 1920, H = V ? 1920 : 1080;
+const DUR = Q.has('end') ? +Q.get('end') : (CUT === '15' ? 15 : 52);
+const stage = document.getElementById('stage');
+stage.style.width = W + 'px'; stage.style.height = H + 'px';
+if (V) document.body.classList.add('v');
+function fit(){ const s = Math.min(innerWidth / W, innerHeight / H);
+  stage.style.transform = `translate(${(innerWidth - W*s)/2}px,${(innerHeight - H*s)/2}px) scale(${s})`; }
+addEventListener('resize', fit); fit();
+
+/* =====================================================================
+   Outils d'animation
+   ===================================================================== */
+const clamp = (x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const seg = (t,a,b)=>clamp((t-a)/(b-a));
+const lerp = (a,b,p)=>a+(b-a)*p;
+// Courbes : on évite le linéaire. outExpo = arrivée « posée », inOut = déplacements de caméra.
+const E = {
+  out:p=>1-Math.pow(1-p,3),
+  outExpo:p=>p===1?1:1-Math.pow(2,-10*p),
+  inOut:p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2,
+  in:p=>p*p*p,
+  back:p=>{const c=1.4;return 1+(c+1)*Math.pow(p-1,3)+c*Math.pow(p-1,2)},
+};
+const tw = (t,a,b,ease=E.out)=>ease(seg(t,a,b));
+function el(html, parent=stage){ const d=document.createElement('div'); d.innerHTML=html.trim(); const n=d.firstElementChild; parent.appendChild(n); return n; }
+function css(n, o){ for (const k in o) n.style[k]=o[k]; }
+function show(n, op){ n.style.opacity = op; n.style.visibility = op<=0.001 ? 'hidden':'visible'; }
+const fmt = n => n.toLocaleString('fr-FR').replace(/ | /g,' ');
+
+/* Icônes contour (même famille visuelle que l'écran « Catégories ») */
+const IC = {
+  shirt:'<svg viewBox="0 0 24 24"><path d="M8 3l-5 3 2 5 3-1v11h8V10l3 1 2-5-5-3c-1 2-2.5 3-4 3S9 5 8 3z"/></svg>',
+  bag:'<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="13" rx="3"/><path d="M9 10a3 3 0 006 0"/></svg>',
+  tv:'<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 3l4 4 4-4"/></svg>',
+  laptop:'<svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="10" rx="1.5"/><path d="M3 19h18"/></svg>',
+  basket:'<svg viewBox="0 0 24 24"><path d="M4 10h16l-2 9H6zM8 10l4-6 4 6M9 14v2M15 14v2M12 14v2"/></svg>',
+  head:'<svg viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0116 0v3"/><rect x="3" y="14" width="4" height="6" rx="2"/><rect x="17" y="14" width="4" height="6" rx="2"/></svg>',
+  spark:'<svg viewBox="0 0 24 24"><path d="M10 4l1.5 5.5L17 11l-5.5 1.5L10 18l-1.5-5.5L3 11l5.5-1.5zM18 3v4M16 5h4M6 18a1.6 1.6 0 110 .1"/></svg>',
+  store:'<svg viewBox="0 0 24 24"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9c0 2 4 2 4 0 0 2 4 2 4 0 0 2 4 2 4 0 0 2 4 2 4 0M10 20v-5h4v5"/></svg>',
+  watch:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M9 3h6l1 4M9 21h6l1-4M8 7l1-4M8 17l1 4M12 10v2l1 1"/></svg>',
+  shoe:'<svg viewBox="0 0 24 24"><path d="M3 16v-5l4-1 3 3 5 1 6 2v3H3zM3 19h18"/></svg>',
+  bottle:'<svg viewBox="0 0 24 24"><path d="M10 3h4v4l2 2v12H8V9l2-2z"/><path d="M8 13h8"/></svg>',
+  search:'<svg viewBox="0 0 24 24" style="stroke:#7d8487"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>',
+};
+
+/* =====================================================================
+   Construction des écrans (reproductions fidèles des captures fournies)
+   ===================================================================== */
+function phone(parent){
+  const p = el(`<div class="phone"><div class="island"></div><div class="screen"></div></div>`, parent);
+  return p;
+}
+const statusBar = (dark)=>`<div class="status ${dark?'dark':''}"><span>07:19</span><span>●●● ▮</span></div>`;
+const header = (title, right='')=>`<div class="hdr">${statusBar()}<h1><span class="arrow">←</span>${title}<span style="margin-left:auto">${right}</span></h1></div>`;
+
+/* Écran Catégories (capture « Catégories ») */
+const CATS = [
+  ['Abaya',29,'shirt'],['Accessoires',38,'bag'],['Accessoires fe…',16,'shirt'],
+  ['Alimentation & …',18,'basket'],['Audio & Son',20,'head'],['Beauté & Soins',196,'spark'],
+  ['Câbles, Adapta…',20,'store'],['Chaussures',145,'shirt'],['Chaussures po…',37,'shirt'],
+  ['Cosmétiques',193,'spark'],['Divers',24,'spark'],['Électronique',125,'tv'],
+  ['Parfumerie',85,'spark'],['Smart Watch',5,'watch'],['Téléphones et …',19,'laptop'],
+];
+function screenCategories(scr){
+  const v = el(`<div class="view">${header('Catégories','<svg viewBox="0 0 24 24" width="24" height="24" style="stroke:#fff;fill:none;stroke-width:2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>')}
+    <div class="pad"><div style="background:var(--g1);border-radius:12px;height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;font:400 15px P;color:#7d8487">
+    <span style="width:20px;height:20px;display:inline-block">${IC.search}</span>Rechercher une catégorie…</div></div>
+    <div class="grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 12px;padding:0 18px;background:#fff;position:relative"></div>
+    <div class="tabbar"><div class="on">⌂<span>Accueil</span></div><div>▤<span>Boutiques</span></div><div>🛒<span>Panier</span></div><div>☰<span>Menu</span></div></div></div>`, scr);
+  const g = v.querySelector('.grid');
+  const tiles = CATS.map(([n,c,i])=>el(`<div><div class="tile" style="height:104px">${IC[i]}</div>
+     <div style="font:500 14px P;margin-top:6px;white-space:nowrap;overflow:hidden">${n}</div><div class="muted" style="font:400 12px P">${c} produits</div></div>`, g));
+  return {v, tiles};
+}
+
+/* Liste produits (captures « Beauté & Soins », « Chaussures », « Électronique ») */
+const LISTS = {
+  'Beauté & Soins': {count:196, items:[
+    ['Mixa Niacimanide','Mamadou Alpha Bah',220000,'bottle'],['The Ordinary — Tonique Exfoliant à l’Acide Glyc…','Abdalah',190000,'img:p-ordinary.jpg'],
+    ['Vaseline Body Wash Smooth Glow','Abdalah',85000,'bottle'],['NIVEA Body Lotion Firming Q10 + Vitamin …','Abdalah',55000,'bottle']]},
+  'Chaussures': {count:145, items:[
+    ['BAPE STA','Mouctar Bah',170000,'shoe'],['Adidas Gazelle II','Mouctar Bah',170000,'shoe'],
+    ['Adidas Superstar','Mouctar Bah',170000,'shoe'],['Reebok','Diouma diwe',190000,'shoe']]},
+  'Électronique': {count:125, items:[
+    ['Hub USB-C Multiport (ou Adaptateur Multip…','Tombon (Electro)',140000,'store'],['casque gaming HP H120G','Tombon (Electro)',180000,'head'],
+    ['Philips GC3820','Tombon (Electro)',85000,'tv'],['Apple Watch Ultra 2','Tombon (Electro)',205000,'watch']]},
+};
+function screenList(scr, cat){
+  const L = LISTS[cat];
+  const v = el(`<div class="view">${header(cat)}
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--g2)">
+      <span class="muted" style="font:400 15px P">${L.count} produits</span>
+      <span style="display:flex;gap:8px"><span class="chip">⇅ Pertinence</span><span class="chip">☰ Filtrer</span></span></div>
+    <div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;padding:16px 18px"></div></div>`, scr);
+  const g = v.querySelector('.grid');
+  const cards = L.items.map(([n,s,p,img])=>el(`<div>
+    <div class="tile" style="height:178px;overflow:hidden;${img.startsWith('img:')?'background:#fff':''}">${img.startsWith('img:')?`<img src="assets/${img.slice(4)}" style="height:100%">`:IC[img]}</div>
+    <div style="font:500 15px/1.3 P;margin-top:8px;height:40px;overflow:hidden">${n}</div>
+    <div class="muted" style="font:400 13px P;margin-top:2px">${s}</div>
+    <div class="price" style="font-size:17px;margin-top:2px">${fmt(p)} GNF</div></div>`, g));
+  return {v, cards};
+}
+
+/* Fiche produit (mise en page de la capture « Abaya Élégance Bicolore »,
+   données limitées à ce qui est connu pour ce produit : nom, prix, boutique) */
+function screenProduct(scr){
+  const v = el(`<div class="view">
+    <div style="height:400px;background:#fff;display:flex;align-items:center;justify-content:center;position:relative">
+      <img src="assets/p-ordinary.jpg" style="height:330px">
+      <div style="position:absolute;left:20px;top:60px;width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15)" class="c">←</div>
+      <div style="position:absolute;right:20px;top:60px;width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15)" class="c">♡</div>
+    </div>
+    <div class="pad">
+      <div style="font:600 21px/1.3 P">The Ordinary — Tonique Exfoliant à l’Acide Glyc…</div>
+      <div class="price" style="font-size:30px;margin-top:6px">190 000 GNF</div>
+      <div class="box" style="margin-top:16px;padding:14px">
+        <div style="display:flex;align-items:center;gap:12px"><div class="avatar">A</div><div style="font:600 17px P">Abdalah</div></div>
+        <div class="btn out" style="height:44px;margin-top:12px;font-size:15px;color:var(--ink)">Voir la boutique</div>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;padding:16px 18px 26px;display:flex;gap:12px;background:#fff;border-top:1px solid var(--g2)">
+      <div class="btn lime addbtn" style="flex:1;font-size:15px">Ajouter au panier</div>
+      <div class="btn teal" style="flex:1;font-size:15px">Acheter mainten…</div></div>
+  </div>`, scr);
+  return {v, add:v.querySelector('.addbtn')};
+}
+
+/* Panier (capture « Panier ») — deux boutiques sélectionnées */
+function screenCart(scr){
+  const shop = (av,name,img,title,price)=>`<div class="box shop" style="margin-top:14px;padding:14px">
+    <div style="display:flex;align-items:center;gap:12px"><div class="check">✓</div><div class="avatar">${av}</div><div style="font:600 17px P">${name}</div><span style="margin-left:auto;color:var(--teal)">›</span></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--g2)">
+      <div class="check">✓</div><div class="tile" style="width:74px;height:74px;background:#fff;overflow:hidden"><img src="assets/${img}" style="height:100%"></div>
+      <div style="flex:1;min-width:0"><div style="font:500 15px P;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div><div class="price" style="font-size:18px">${price}</div></div>
+      <div style="display:flex;align-items:center;gap:8px;font:500 15px P"><span class="chip" style="padding:4px 10px">−</span>1<span class="chip" style="padding:4px 10px">+</span></div></div>
+  </div>`;
+  const v = el(`<div class="view">
+    <div class="hdr">${statusBar()}<h1>Panier<span style="margin-left:auto;font-size:20px">🗑</span></h1></div>
+    <div class="pad">
+      <div class="banner" style="background:var(--g1);border-radius:14px;padding:14px;font:600 16px P;display:flex;gap:10px;align-items:center">
+        <span style="color:var(--teal)">🛍</span><span class="bt">2 boutiques. Un seul panier.</span></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:14px;font:400 15px P"><div class="check">✓</div>Tout sélectionner (2)<span style="margin-left:auto;color:var(--red)">Supprimer</span></div>
+      ${shop('A','Abdalah','p-ordinary.jpg','The Ordinary — Tonique Exf…','190 000')}
+      ${shop('T(','Tombon (Electro)','p-hp.jpg','HP EliteBook x360 1040 G6 …','4 130 000')}
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:78px;padding:12px 18px;background:#fff">
+      <div class="btn teal payb">Passer au paiement</div>
+      <div class="btn lime" style="margin-top:10px;height:48px">⤳ Partager mon panier</div></div>
+    <div class="tabbar"><div>⌂<span>Accueil</span></div><div>▤<span>Boutiques</span></div><div class="on">🛒<span>Panier</span><b class="badge">2</b></div><div>☰<span>Menu</span></div></div>
+  </div>`, scr);
+  return {v, shops:[...v.querySelectorAll('.shop')], banner:v.querySelector('.banner'), pay:v.querySelector('.payb')};
+}
+
+/* Stepper commun Livraison / Paiement / Confirmation */
+const stepper = (k)=>{ const s=['Livraison','Paiement','Confirmation'];
+  return `<div style="display:flex;justify-content:space-between;padding:16px 26px 8px">${s.map((n,i)=>`<div style="text-align:center;font:500 13px P;color:${i<=k?'var(--teal)':'var(--g3)'}">
+  <div style="width:34px;height:34px;border-radius:50%;margin:0 auto 4px;background:${i<=k?'var(--teal)':'var(--g1)'};color:${i<=k?'#fff':'var(--g3)'}" class="c">${i+1}</div>${n}</div>`).join('')}</div>`; };
+
+/* Livraison (capture « Livraison ») */
+function screenDelivery(scr){
+  const v = el(`<div class="view">${header('Livraison')}${stepper(0)}
+   <div class="pad" style="padding-top:6px">
+    <div style="font:600 18px P">Mode de réception</div>
+    <div class="box" style="border-color:var(--teal);margin-top:10px;padding:14px;display:flex;gap:12px;align-items:center">
+      <div class="radio on"></div><div style="flex:1"><div style="font:600 15px P">Livraison standard <span style="background:var(--lime);border-radius:6px;padding:1px 6px;font-size:12px;color:var(--teal-dd)">24-72h</span></div><div style="font:400 13px P">Sous 24 à 72 h</div></div><div class="price">0 GNF</div></div>
+    <div class="box" style="margin-top:10px;padding:14px;display:flex;gap:12px;align-items:center">
+      <div class="radio"></div><div style="flex:1"><div style="font:600 15px P">Livraison express <span style="background:var(--lime);border-radius:6px;padding:1px 6px;font-size:12px;color:var(--teal-dd)">Aujourd'hui</span></div><div class="muted" style="font:400 13px P">Livré aujourd'hui</div></div><div class="price" style="font-size:14px">25 000 GNF</div></div>
+    <div style="font:600 18px P;margin-top:18px">Par boutique</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px"><div class="avatar" style="width:34px;height:34px">A</div><span style="font:500 15px P">Abdalah</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px"><div class="avatar" style="width:34px;height:34px">T(</div><span style="font:500 15px P">Tombon (Electro)</span></div>
+    <div style="font:600 18px P;margin-top:18px">Créneau souhaité</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+      <span class="chip slot0" style="border-radius:22px;padding:10px 14px">Matin · 9h-12h</span>
+      <span class="chip slot1" style="border-radius:22px;padding:10px 14px">Après-midi · 14h-18h</span>
+      <span class="chip" style="border-radius:22px;padding:10px 14px">Soir · 18h-21h</span></div>
+    <div style="margin-top:16px;background:var(--lime-l);border:1.5px solid #E3F5C8;border-radius:14px;padding:12px 14px">
+      <div style="font:600 15px P;color:var(--teal)">⚿ Code de validation</div>
+      <div style="font:400 13px P;color:var(--teal-dd)">Le livreur ne valide la commande qu'avec ton code.</div></div>
+   </div></div>`, scr);
+  return {v, s0:v.querySelector('.slot0'), s1:v.querySelector('.slot1')};
+}
+
+/* Paiement (capture « Paiement ») — moyens réellement listés */
+const PAY = [['OM','Orange Money','Paiement instantané'],['MoMo','MTN Mobile Money','Paiement instantané'],['▭','Carte bancaire','Visa, Mastercard'],
+  ['','PayCard','Paiement par carte PayCard'],['▣','Paiement à la livraison','Espèces au livreur']];
+function screenPay(scr, total){
+  const v = el(`<div class="view">${header('Paiement')}${stepper(1)}
+   <div class="pad" style="padding-top:6px">
+    <div style="background:var(--g1);border-radius:12px;padding:10px 14px;font:600 14px P">◷ Stock réservé encore 14:32</div>
+    <div style="font:600 18px P;margin-top:14px">Méthode de paiement</div>
+    <div class="list">${PAY.map(([ic,n,d],i)=>`<div class="box pm" style="margin-top:10px;padding:14px;display:flex;gap:12px;align-items:center">
+      <div class="radio"></div>${ic?`<div style="width:44px;height:44px;border-radius:10px;background:var(--g1);font:600 13px P;color:var(--g4)" class="c">${ic}</div>`:''}
+      <div><div style="font:500 16px P">${n}</div><div class="muted" style="font:400 13px P">${d}</div></div></div>`).join('')}</div>
+   </div>
+   <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 18px 26px;background:#fff;border-top:1px solid var(--g2)">
+     <div style="display:flex;justify-content:space-between;font:600 16px P;margin-bottom:10px"><span>Total</span><span class="price" style="font-size:22px">${fmt(total)} GNF</span></div>
+     <div class="btn teal payb">🔒 Payer ${fmt(total)} GNF</div></div></div>`, scr);
+  return {v, pms:[...v.querySelectorAll('.pm')], pay:v.querySelector('.payb')};
+}
+
+/* Commande confirmée (capture « Commande confirmée ») */
+function screenConfirm(scr){
+  const v = el(`<div class="view">${statusBar(true)}
+    <div style="text-align:right;padding:6px 26px;font-size:26px;color:var(--g4)">×</div>
+    <div class="okc" style="width:150px;height:150px;border-radius:50%;background:var(--lime);margin:10px auto 0;font:600 70px P;color:var(--teal)" ><div class="c" style="height:100%">✓</div></div>
+    <div style="text-align:center;font:700 28px P;margin-top:18px">Commande confirmée</div>
+    <div class="muted" style="text-align:center;font:400 15px P;margin-top:4px">Vos 2 boutiques préparent votre commande.</div>
+    <div style="margin:16px 22px 0;background:var(--g1);border-radius:12px;padding:12px;text-align:center;font:600 17px P">#KB-2YQ-4A3</div>
+    <div class="code" style="margin:16px 22px 0;background:var(--lime-l);border:2px solid var(--lime-b);border-radius:16px;padding:16px;text-align:center">
+      <div style="font:600 15px P;color:var(--teal-dd)">Votre code de livraison</div>
+      <div class="digits" style="font:700 54px P;color:var(--teal);letter-spacing:.3em;margin:6px 0 2px 0.3em">5348</div>
+      <div style="font:400 12px P;color:var(--teal-dd)">Ne le donnez qu'au livreur, à la remise du colis.</div></div>
+    <div style="position:absolute;left:22px;right:22px;bottom:30px">
+      <div class="btn teal">Suivre ma commande</div><div class="btn out" style="margin-top:10px">Retour à l'accueil</div></div></div>`, scr);
+  return {v, ok:v.querySelector('.okc'), code:v.querySelector('.code')};
+}
+
+/* Suivi (capture « Suivi ») */
+const STEPS=['Commande reçue','Paiement confirmé','Confirmée par la boutique','Préparée','Confiée au livreur','En route','Livrée'];
+function screenTrack(scr){
+  const v = el(`<div class="view">${header('Suivi','🎧')}
+    <div class="pad"><div style="background:var(--g1);border-radius:14px;padding:14px"><div class="muted" style="font:400 14px P">#KB-2YQ-4A3</div>
+      <div class="ttl" style="font:600 20px P">Commande reçue</div></div>
+    <div style="position:relative;margin-top:16px;padding-left:44px">
+      <div style="position:absolute;left:15px;top:12px;bottom:12px;width:3px;background:var(--g2)"></div>
+      <div class="bar" style="position:absolute;left:15px;top:12px;width:3px;background:var(--teal);height:0"></div>
+      ${STEPS.map(s=>`<div class="st" style="position:relative;height:56px;display:flex;align-items:center;font:600 17px P;color:var(--g3)">
+        <div class="dot" style="position:absolute;left:-40px;width:28px;height:28px;border-radius:50%;background:var(--g2)"></div>${s}</div>`).join('')}
+    </div></div></div>`, scr);
+  return {v, st:[...v.querySelectorAll('.st')], bar:v.querySelector('.bar'), ttl:v.querySelector('.ttl')};
+}
+
+/* =====================================================================
+   Logo — on utilise le pictogramme officiel extrait du fichier fourni
+   (jamais redessiné). Le mot « kambily » est un PLACEHOLDER typographique
+   à remplacer par le fichier vectoriel officiel du logotype.
+   ===================================================================== */
+const kmark = (cls='white', size=200)=>`<img src="assets/k-mark-${cls}.png" style="width:${size}px;height:${size}px;display:block">`;
+
+/* =====================================================================
+   SCÈNES — film maître (50 s)
+   Chaque scène : build() crée le DOM, upd(t) pose l'état à l'instant t.
+   ===================================================================== */
+const S = [];
+function scene(a,b,build){ const root = el(`<div class="scene"></div>`); const upd = build(root); S.push({a,b,root,upd}); }
+const sub = el(`<div class="sub"></div>`);
+
+/* Position du téléphone selon le format */
+const PH = V ? {x:(W-430*1.32)/2, y:480, s:1.32} : {x:W*0.62-215, y:(H-900)/2, s:1};
+function placePhone(p, x=PH.x, y=PH.y, s=PH.s, r=0){ css(p,{left:x+'px',top:y+'px',transform:`scale(${s}) rotate(${r}deg)`,transformOrigin:'0 0'}); }
+
+/* ---- Plan 1 · 0:00–0:05 · Accroche : la ville, une liste, deux boutiques éloignées ---- */
+function plan1(root, T0, LEN){
+  const pl = el(`<div class="plate">
+    <div class="sun" style="width:900px;height:600px;left:55%;top:-20%;background:#f5b56a"></div>
+    <div class="sun" style="width:700px;height:500px;left:-10%;top:50%;background:#2d6b70"></div>
+    <div class="silh" style="width:${V?420:300}px;height:${V?900:620}px;left:${V?330:220}px;bottom:-40px"></div>
+    <div class="tag">PLAN TOURNÉ 1</div>
+    <div class="desc">Conakry, matin. Rue commerçante animée, lumière rasante. Aminata (≈27 ans) au bord de la route, téléphone en main. Plan serré sur son visage : elle fait le calcul — deux achats, deux boutiques, deux trajets.</div></div>`, root);
+  // Carte stylisée : deux repères qui s'éloignent (le problème)
+  const map = el(`<div class="abs" style="left:${V?80:900}px;top:${V?1050:260}px;width:${V?920:880}px;height:${V?520:560}px"></div>`, root);
+  const pin = (x,y,label)=>el(`<div class="abs" style="left:${x}px;top:${y}px;opacity:0"><div class="shopcard" style="position:relative"><div class="avatar">${label[0]}</div>${label}</div></div>`, map);
+  const p1 = pin(0, 40, 'Abdalah · Beauté'), p2 = pin(V?420:480, V?320:380, 'Tombon (Electro)');
+  const line = el(`<svg class="abs" style="left:0;top:0;overflow:visible" width="100%" height="100%"><path d="M180 120 C 400 120, 300 ${V?380:430}, ${V?560:620} ${V?400:450}" stroke="#fff" stroke-width="4" stroke-dasharray="10 14" fill="none" stroke-linecap="round"/></svg>`, map);
+  const path = line.querySelector('path'); const L = path.getTotalLength ? 900 : 900;
+  path.style.strokeDasharray = '10 14';
+  const kt = el(`<div class="kt" style="color:#fff;font-size:${V?82:76}px;left:${V?80:120}px;top:${V?620:H-300}px">
+     <div class="l1">Un produit ici.</div><div class="l2" style="color:var(--lime)">L'autre, là-bas.</div></div>`, root);
+  return t=>{
+    const k = seg(t,T0,T0+LEN);
+    css(pl,{transform:`scale(${1.08-0.06*k})`});              // lent push-out caméra
+    show(p1, tw(t,T0+0.8,T0+1.4)); css(p1,{transform:`translateY(${(1-tw(t,T0+0.8,T0+1.4,E.back))*30}px)`});
+    show(p2, tw(t,T0+1.6,T0+2.2)); css(p2,{transform:`translateY(${(1-tw(t,T0+1.6,T0+2.2,E.back))*30}px)`});
+    show(line, tw(t,T0+1.4,T0+2.2));
+    const l1 = kt.querySelector('.l1'), l2 = kt.querySelector('.l2');
+    show(l1, tw(t,T0+0.4,T0+1.0)); css(l1,{transform:`translateY(${(1-tw(t,T0+0.4,T0+1.0,E.outExpo))*40}px)`});
+    show(l2, tw(t,T0+1.6,T0+2.2)); css(l2,{transform:`translateY(${(1-tw(t,T0+1.6,T0+2.2,E.outExpo))*40}px)`});
+    // Fin de plan : les deux repères se rapprochent l'un de l'autre (amorce du raccord)
+    const j = tw(t,T0+3.6,T0+LEN,E.inOut);
+    css(map,{transform:`scale(${1-0.15*j})`});
+    css(p2.firstElementChild,{transform:`translate(${-(V?380:440)*j}px,${-(V?250:310)*j}px)`});
+    show(line, tw(t,T0+1.4,T0+2.2)*(1-j));
+    show(kt, 1-tw(t,T0+3.8,T0+LEN));
+  };
+}
+scene(0,5.2, root=>plan1(root,0,5.2));
+
+/* ---- Plan 2 · 0:05–0:09 · Raccord de forme : les boutiques se rejoignent → le pictogramme K → l'écran ---- */
+scene(4.9,9.4, root=>{
+  root.style.background='var(--teal)';
+  const mark = el(`<div class="abs c" style="left:0;top:0;width:${W}px;height:${H}px">${kmark('white', V?300:260)}</div>`, root);
+  const kt = el(`<div class="kt" style="color:#fff;font-size:${V?74:64}px;width:${W}px;text-align:center;top:${V?1240:760}px;white-space:normal">Et si les boutiques<br>venaient à toi&nbsp;?</div>`, root);
+  const ph = phone(root); const c = screenCategories(ph.querySelector('.screen'));
+  return t=>{
+    const a = tw(t,4.9,5.6,E.outExpo);
+    show(root, 1);
+    show(kt, tw(t,5.6,6.2)*(1-tw(t,7.6,8.0)));
+    css(kt,{transform:`translateY(${(1-tw(t,5.6,6.2,E.outExpo))*30}px)`});
+    // Le pictogramme se réduit et devient l'icône d'app → le téléphone entre
+    const m = tw(t,7.4,8.2,E.inOut);
+    css(mark,{transform:`translate(${(V?0:(PH.x+215-W/2))*m}px,0px) scale(${lerp(0.2,1,a)*lerp(1,0.25,m)}) rotate(${lerp(-20,0,a)}deg)`, opacity:a*(1-tw(t,8.0,8.3))});
+    const pin = tw(t,7.8,8.8,E.outExpo);
+    show(ph, pin); placePhone(ph, PH.x, PH.y + (1-pin)*300, PH.s);
+    root.style.background = `color-mix(in srgb, var(--teal) ${100-tw(t,8.4,9.2)*100}%, #F5F7F7)`;
+    c.tiles.forEach((n,i)=>{ const q=tw(t,8.4+i*0.04,8.9+i*0.04,E.out); show(n,q); css(n,{transform:`translateY(${(1-q)*24}px)`}); });
+  };
+});
+
+/* ---- Plan 3 · 0:09–0:17 · Exploration : catégories → trois vitrines réelles ---- */
+scene(9.2,17.4, root=>{
+  root.style.background='#F5F7F7';
+  const ph = phone(root); const scr = ph.querySelector('.screen');
+  const c = screenCategories(scr);
+  const lists = ['Beauté & Soins','Chaussures','Électronique'].map(k=>screenList(scr,k));
+  const kt = el(`<div class="kt" style="font-size:${V?72:68}px;left:${V?80:140}px;top:${V?150:300}px;color:var(--ink);white-space:normal;width:${V?920:720}px">
+     <div class="a">Des centaines</div><div class="a">de produits.</div><div class="a" style="color:var(--teal)">Des boutiques d'ici.</div></div>`, root);
+  // Cartes boutiques réelles qui sortent du téléphone (couche « monde ») — les noms viennent des captures
+  const SH = [['A','Abdalah'],['M','Mouctar Bah'],['T(','Tombon (Electro)'],['MA','Mamadou Alpha Bah'],['D','Diouma diwe'],['M','Mundjiir']];
+  const cards = SH.map(([a,n])=>el(`<div class="shopcard"><div class="avatar">${a}</div>${n}</div>`, root));
+  const slots = V ? [[40,1690],[400,1720],[730,1690],[30,1790],[420,1810],[740,1790]]
+                  : [[140,640],[420,740],[150,840],[1390,190],[1460,760],[1420,880]];
+  return t=>{
+    show(root, 1); placePhone(ph);
+    // Catégories : défilement + mise en avant de 3 catégories
+    const hi = [5,7,11]; // Beauté & Soins, Chaussures, Électronique
+    c.tiles.forEach((n,i)=>{ const on = hi.includes(i) ? tw(t,10.4,10.9) : 0; n.firstElementChild.style.boxShadow = on?`0 0 0 ${3*on}px var(--teal) inset`:''; });
+    css(c.v.querySelector('.grid'),{transform:`translateY(${-tw(t,9.4,10.4,E.inOut)*90}px)`});
+    // Les trois listes glissent l'une après l'autre (mouvement latéral, rythme ↗)
+    const T = [[12.3,13.7],[13.5,14.7],[14.5,17.4]];  // calé VO : « Beauté » 12,6 · « chaussures » 13,7 · « électronique » 14,7
+    lists.forEach((L,i)=>{
+      const [a,b] = T[i]; const inP = tw(t,a,a+0.5,E.outExpo), outP = i<2 ? tw(t,b-0.2,b+0.3,E.in) : 0;
+      css(L.v,{transform:`translateX(${(1-inP)*100 - outP*100}%)`}); show(L.v, inP>0?1:0);
+      L.cards.forEach((cd,j)=>{ const q=tw(t,a+0.15+j*0.08,a+0.6+j*0.08,E.back); css(cd,{transform:`translateY(${(1-q)*40}px)`}); });
+      css(L.v.querySelector('.grid'),{transform:`translateY(${-tw(t,a+0.6,b,E.inOut)*40}px)`});
+    });
+    [...kt.children].forEach((n,i)=>{ const q=tw(t,10.0+i*0.4,10.6+i*0.4,E.outExpo); show(n,q); css(n,{transform:`translateY(${(1-q)*36}px)`}); });
+    show(kt, 1-tw(t,16.6,17.2));
+    cards.forEach((n,i)=>{ const q=tw(t,11.2+i*0.18,11.9+i*0.18,E.back); const [x,y]=slots[i];  /* « …ont leur vitrine » */
+      css(n,{left:x+'px',top:y+'px',transform:`translateY(${(1-q)*40}px) scale(${0.9+0.1*q})`}); show(n, q*(1-tw(t,16.6,17.2))); });
+  };
+});
+
+/* ---- Plan 4 · 0:17–0:23 · Fiche produit → ajout au panier (le produit vole vers le panier) ---- */
+scene(17.2,23.4, root=>{
+  root.style.background='#F5F7F7';
+  const ph = phone(root); const scr = ph.querySelector('.screen');
+  const P = screenProduct(scr);
+  const tap = el(`<div class="tap"></div>`, scr);
+  const fly = el(`<img src="assets/p-ordinary.jpg" class="abs" style="width:120px;border-radius:14px;opacity:0;box-shadow:0 20px 40px -10px rgba(0,0,0,.3)">`, root);
+  const kt = el(`<div class="kt" style="font-size:${V?70:64}px;left:${V?80:140}px;top:${V?160:380}px;white-space:normal;width:${V?920:700}px">
+     <div class="a">Tu trouves.</div><div class="a" style="color:var(--teal)">Tu ajoutes.</div></div>`, root);
+  const cnt = el(`<div class="abs c" style="width:96px;height:96px;border-radius:28px;background:var(--teal);color:#fff;font:700 40px P;
+     left:${V?W-200:PH.x-170}px;top:${V?1580:PH.y+40}px;opacity:0"><span>🛒</span><b class="badge" style="width:36px;height:36px;font-size:18px;top:-10px;right:-10px">1</b></div>`, root);
+  return t=>{
+    show(root,1);
+    // Entrée par « zoom dans la carte produit » : la fiche s'ouvre depuis la grille
+    const o = tw(t,17.2,17.9,E.outExpo);
+    placePhone(ph, PH.x, PH.y, PH.s*(0.96+0.04*o));
+    css(P.v,{clipPath:`inset(${(1-o)*30}% ${(1-o)*50}% ${(1-o)*50}% ${(1-o)*5}% round ${24*(1-o)}px)`});
+    [...kt.children].forEach((n,i)=>{ const q=tw(t,17.8+i*0.9,18.4+i*0.9,E.outExpo); show(n,q); css(n,{transform:`translateY(${(1-q)*36}px)`}); });
+    show(kt, 1-tw(t,22.6,23.2));
+    // Tap sur « Ajouter au panier »
+    const bx = 18+97, by = 900-28-26-27;  // centre du bouton dans l'écran (repère 402×872 env.)
+    const tp = seg(t,19.2,19.8); css(tap,{left:bx+'px',top:by+'px',transform:`scale(${0.6+tp*0.8})`}); show(tap, tp>0&&tp<1 ? 1-tp : 0);
+    css(P.add,{transform:`scale(${1-0.05*Math.sin(Math.PI*seg(t,19.2,19.5))})`});
+    // Vol du produit vers l'icône panier (arc), puis badge
+    const f = tw(t,19.5,20.6,E.inOut);
+    const sx = PH.x+PH.s*(215-60), sy = PH.y+PH.s*120, ex = parseFloat(cnt.style.left)+10, ey = parseFloat(cnt.style.top)+10;
+    css(fly,{left:lerp(sx,ex,f)+'px', top:(lerp(sy,ey,f) - Math.sin(Math.PI*f)*160)+'px', transform:`scale(${lerp(1.6,0.5,f)}) rotate(${-12*f}deg)`});
+    show(fly, f>0 && f<1 ? 1 : 0);
+    show(cnt, tw(t,18.6,19.0)); css(cnt,{transform:`scale(${1+0.18*Math.sin(Math.PI*seg(t,20.6,20.95))})`});
+    cnt.querySelector('.badge').textContent = t>22.0 ? '2' : '1';
+    show(cnt.querySelector('.badge'), t>20.55 ? 1 : 0);
+  };
+});
+
+/* ---- Plan 5 · 0:23–0:29 · Le panier : « 2 boutiques. Un seul panier. » (idée centrale) ---- */
+scene(23.2,29.4, root=>{
+  root.style.background='var(--teal)';
+  const ph = phone(root); const scr = ph.querySelector('.screen'); const C = screenCart(scr);
+  const big = el(`<div class="kt" style="color:#fff;font-size:${V?96:92}px;left:${V?70:110}px;top:${V?110:330}px;white-space:normal;width:${V?940:760}px">
+    <div class="a">Plusieurs boutiques.</div><div class="a" style="color:var(--lime)">Un seul panier.</div></div>`, root);
+  return t=>{
+    show(root,1);
+    // Le fond passe du gris au teal : moment-clé, on change de « température »
+    root.style.background = `color-mix(in srgb, var(--teal) ${tw(t,23.2,23.8)*100}%, #F5F7F7)`;
+    const e = tw(t,23.2,24.0,E.outExpo); placePhone(ph, PH.x + (V?0:60)*(1-e), PH.y, PH.s, (1-e)*4);
+    C.shops.forEach((s,i)=>{ const q=tw(t,23.8+i*0.5,24.4+i*0.5,E.back); css(s,{transform:`translateX(${(1-q)*120}%)`}); });
+    // Le bandeau réel est souligné (reprise exacte du libellé de l'app)
+    const b = tw(t,25.0,25.5); C.banner.style.boxShadow = `0 0 0 ${3*b}px var(--lime) inset`;
+    [...big.children].forEach((n,i)=>{ const q=tw(t,24.6+i*0.8,25.3+i*0.8,E.outExpo); show(n,q); css(n,{transform:`translateY(${(1-q)*50}px)`}); });
+    show(big, 1-tw(t,28.6,29.2));
+    // Tap « Passer au paiement »
+    const p = Math.sin(Math.PI*seg(t,28.2,28.6)); css(C.pay,{transform:`scale(${1-0.04*p})`, filter:`brightness(${1-0.15*p})`});
+  };
+});
+
+/* ---- Plan 6 · 0:29–0:35 · Livraison → Paiement → Confirmation (montage en « volets » rapides) ---- */
+scene(29.2,35.4, root=>{
+  root.style.background='#F5F7F7';
+  const ph = phone(root); const scr = ph.querySelector('.screen');
+  const D = screenDelivery(scr), Pm = screenPay(scr, 4320000), Cf = screenConfirm(scr);
+  const labels = el(`<div class="abs" style="left:${V?80:140}px;top:${V?150:330}px;font:700 ${V?64:58}px/1.15 P;letter-spacing:-.02em;width:${V?920:700}px">
+    <div class="a">Ton créneau.</div><div class="a">Mobile money, carte</div><div class="a">ou à la livraison.</div><div class="a" style="color:var(--teal)">Confirmé.</div></div>`, root);
+  return t=>{
+    show(root,1); placePhone(ph);
+    const w1 = tw(t,31.2,31.6,E.inOut), w2 = tw(t,33.2,33.6,E.inOut);
+    css(Pm.v,{transform:`translateX(${(1-w1)*100}%)`}); css(Cf.v,{transform:`translateX(${(1-w2)*100}%)`});
+    // Choix du créneau « Après-midi · 14h-18h »
+    const s = t>30.3; css(D.s1,{background:s?'var(--teal)':'var(--g1)',color:s?'#fff':'var(--ink)'});
+    // Défilement des moyens de paiement réels, sélection Orange Money
+    Pm.pms.forEach((n,i)=>{ const q=tw(t,31.5+i*0.12,31.9+i*0.12,E.out); css(n,{transform:`translateY(${(1-q)*24}px)`, opacity:q}); });
+    const om = t>32.3; Pm.pms[0].style.borderColor = om?'var(--teal)':''; Pm.pms[0].querySelector('.radio').classList.toggle('on',om);
+    const pp = Math.sin(Math.PI*seg(t,32.8,33.15)); css(Pm.pay,{transform:`scale(${1-0.04*pp})`});
+    // Confirmation : pastille qui « éclot », code qui monte
+    const k = tw(t,33.7,34.2,E.back); css(Cf.ok,{transform:`scale(${k})`});
+    const cd = tw(t,34.0,34.6,E.outExpo); css(Cf.code,{transform:`translateY(${(1-cd)*30}px)`, opacity:cd});
+    const ls = [...labels.children]; const at=[29.6,31.4,31.8,33.7];
+    ls.forEach((n,i)=>{ const q=tw(t,at[i],at[i]+0.5,E.outExpo); const dim = (i===0 && t>31.4)||((i===1||i===2)&&t>33.7) ? 0.25 : 1; css(n,{opacity:q*dim, transform:`translateY(${(1-q)*30}px)`}); });
+    show(labels, 1-tw(t,34.9,35.3));
+  };
+});
+
+/* ---- Plan 7 · 0:35–0:41 · Retour au réel : la remise du colis avec le code ---- */
+scene(35.2,41.4, root=>{
+  const pl = el(`<div class="plate" style="background:linear-gradient(170deg,#6b5a45,#2a2622 70%)">
+    <div class="sun" style="width:800px;height:600px;left:40%;top:-30%;background:#ffd59a"></div>
+    <div class="silh" style="width:${V?380:260}px;height:${V?820:560}px;left:${V?120:520}px;bottom:-30px"></div>
+    <div class="silh" style="width:${V?400:280}px;height:${V?860:600}px;left:${V?560:880}px;bottom:-30px;background:#0d3c40"></div>
+    <div class="tag">PLAN TOURNÉ 2</div>
+    <div class="desc">Devant chez Aminata, après-midi. Un livreur en polo Kambily lui tend le colis. Insert : elle montre l'écran « Votre code de livraison », il saisit le code. Échange de sourires, sans surjeu.</div></div>`, root);
+  const card = el(`<div class="abs" style="left:${V?140:1240}px;top:${V?1160:300}px;width:${V?800:520}px;background:#fff;border-radius:22px;padding:${V?30:24}px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)">
+    <div style="font:600 ${V?26:20}px P;color:var(--teal-dd);text-align:center">Votre code de livraison</div>
+    <div style="font:700 ${V?110:80}px P;color:var(--teal);letter-spacing:.3em;text-align:center;margin-left:.3em" class="dg">5348</div>
+    <div class="tl" style="margin-top:10px;display:flex;justify-content:space-between;gap:6px"></div>
+    <div class="lv" style="text-align:center;font:600 ${V?30:24}px P;margin-top:12px;color:var(--teal)">Livrée ✓</div></div>`, root);
+  const tl = card.querySelector('.tl');
+  const dots = STEPS.map(()=>el(`<div style="flex:1;height:8px;border-radius:4px;background:var(--g2)"></div>`, tl));
+  const kt = el(`<div class="kt" style="color:#fff;font-size:${V?82:72}px;left:${V?80:120}px;top:${V?620:H-290}px">
+    <div class="a">Ton code.</div><div class="a" style="color:var(--lime)">Ton colis.</div></div>`, root);
+  return t=>{
+    show(root,1); css(pl,{transform:`scale(${1.02+0.05*seg(t,35.2,41.4)})`});
+    const c = tw(t,36.0,36.7,E.outExpo); show(card,c); css(card,{transform:`translateY(${(1-c)*40}px)`});
+    dots.forEach((d,i)=>{ d.style.background = t > 36.6 + i*0.35 ? 'var(--teal)' : 'var(--g2)'; });
+    show(card.querySelector('.lv'), tw(t,39.2,39.6));
+    [...kt.children].forEach((n,i)=>{ const q=tw(t,37.2+i*0.7,37.8+i*0.7,E.outExpo); show(n,q); css(n,{transform:`translateY(${(1-q)*36}px)`}); });
+    show(kt, 1-tw(t,40.7,41.2)); show(card, c*(1-tw(t,40.7,41.2)));
+  };
+});
+
+/* ---- Plan 8 · 0:41–0:46 · L'autre côté : la boutique (ouverture vendeurs) ---- */
+scene(41.2,46.4, root=>{
+  const pl = el(`<div class="plate" style="background:linear-gradient(160deg,#1f3b3f,#0f1a1c)">
+    <div class="sun" style="width:700px;height:500px;left:-5%;top:-20%;background:#4fb3bd"></div>
+    <div class="silh" style="width:${V?400:280}px;height:${V?840:580}px;left:${V?340:300}px;bottom:-30px"></div>
+    <div class="tag">PLAN TOURNÉ 3</div>
+    <div class="desc">Boutique d'électronique, comptoir. Le gérant (≈35 ans) emballe soigneusement l'ordinateur portable et le pose sur une pile de colis prêts. Il regarde la caméra, léger sourire.</div></div>`, root);
+  const shop = el(`<div class="shopcard" style="font-size:${V?34:28}px;padding:20px 30px 20px 20px"><div class="avatar" style="width:68px;height:68px;font-size:22px">T(</div>Tombon (Electro)</div>`, root);
+  const kt = el(`<div class="kt" style="color:#fff;font-size:${V?70:62}px;left:${V?80:900}px;top:${V?1240:540}px;white-space:normal;width:${V?920:900}px;line-height:1.15">
+    <div class="a">Vous avez une boutique&nbsp;?</div><div class="a" style="color:var(--lime)">Rejoignez Kambily.</div>
+    <div class="a" style="font:500 ${V?38:32}px P;color:#fff;margin-top:22px;opacity:.9">contact@kambily.com</div></div>`, root);
+  return t=>{
+    show(root,1); css(pl,{transform:`scale(${1.06-0.05*seg(t,41.2,46.4)})`});
+    const s = tw(t,41.6,42.3,E.back);
+    css(shop,{left:(V?200:900)+'px', top:(V?1080:380)+'px', transform:`translateY(${(1-s)*40}px)`}); show(shop, s*(1-tw(t,45.8,46.3)));
+    [...kt.children].forEach((n,i)=>{ const at8=[41.8,43.0,44.6]; const q=tw(t,at8[i],at8[i]+0.6,E.outExpo); show(n,q); css(n,{transform:`translateY(${(1-q)*36}px)`}); });
+    show(kt, 1-tw(t,45.8,46.3));
+  };
+});
+
+/* ---- Plan 9 · 0:46–0:50 · Signature : les boutiques convergent → logo + accroche + CTA ---- */
+scene(46.0,52.1, root=>{
+  root.style.background='var(--teal)';
+  const NAMES = ['Abdalah','Tombon (Electro)','Mouctar Bah','Diouma diwe','Mundjiir','Mamadou Alpha Bah'];
+  const cards = NAMES.map(n=>el(`<div class="shopcard" style="font-size:18px"><div class="avatar">${n[0]}</div>${n}</div>`, root));
+  const lock = el(`<div class="abs c" style="left:0;top:0;width:${W}px;height:${H}px;flex-direction:column">
+     <div style="display:flex;align-items:center;gap:${V?28:24}px">${kmark('white', V?170:140)}
+       <div style="font:600 ${V?120:100}px P;color:#fff;letter-spacing:-.02em" title="PLACEHOLDER — remplacer par le logotype officiel">kambily</div></div>
+     <div class="tg" style="font:600 ${V?52:44}px P;color:var(--lime);margin-top:${V?56:40}px;text-align:center">Les boutiques d'ici. Un seul panier.</div>
+     <div class="url" style="margin-top:${V?40:28}px;font:500 ${V?40:32}px P;color:#fff;border:2px solid rgba(255,255,255,.8);border-radius:12px;padding:8px 26px">www.kambily.com</div>
+  </div>`, root);
+  const pos = V ? [[60,500],[600,620],[80,1360],[640,1260],[120,900],[560,1500]] : [[120,160],[1460,200],[160,820],[1500,800],[700,90],[1000,900]];
+  return t=>{
+    show(root,1);
+    cards.forEach((c,i)=>{ const a=tw(t,46.0+i*0.06,46.5+i*0.06,E.outExpo), m=tw(t,46.9,47.6,E.in); const [x,y]=pos[i];
+      const cx=W/2-120, cy=H/2-40;
+      css(c,{left:lerp(x,cx,m)+'px',top:lerp(y,cy,m)+'px',transform:`scale(${(0.8+0.2*a)*(1-m*0.7)})`}); show(c, a*(1-tw(t,47.4,47.7))); });
+    const l = tw(t,47.5,48.2,E.outExpo);
+    css(lock.firstElementChild,{transform:`scale(${0.85+0.15*l})`, opacity:l});
+    const g = tw(t,48.3,48.8,E.outExpo); css(lock.querySelector('.tg'),{opacity:g, transform:`translateY(${(1-g)*20}px)`});
+    const u = tw(t,49.0,49.5,E.outExpo); css(lock.querySelector('.url'),{opacity:u});
+  };
+});
+
+/* Sous-titres : issus de vo-cues.js (source unique du minutage voix) */
+const SUBS = window.VO.master.filter(c=>c.sub).map(c=>[c.a-0.1,c.b+0.4,c.text]);
+
+/* =====================================================================
+   SPOT 15 s — remontage narratif (pas une accélération du film maître)
+   Idée conservée : problème (2 boutiques) → solution (1 panier) → preuve (code) → marque.
+   On réutilise les plans en remappant le temps.
+   ===================================================================== */
+const MAP15 = [ // [début15, fin15, début maître]
+  [0,2.6,1.0],      // accroche : « Un produit ici. L'autre, là-bas. »
+  [2.6,6.6,23.4],   // panier : « Plusieurs boutiques. Un seul panier. »
+  [6.6,9.6,33.2],   // confirmation + code
+  [9.6,11.4,37.0],  // remise du colis « Ton code. Ton colis. »
+  [11.4,15,46.4],   // signature : logo sur « Kambily » à 12,5 s
+];
+const SUBS15 = window.VO['15'].filter(c=>c.sub).map(c=>[c.a-0.1,c.b+0.4,c.text]);
+
+/* Prompteur voix off (?cues=1) : phrase en cours, mot-clé surligné à l'instant prévu */
+const CUES = Q.get('cues')==='1';
+const prompter = el(`<div class="abs" style="left:0;right:0;top:0;height:${V?150:96}px;background:rgba(0,0,0,.82);color:#fff;z-index:997;display:${CUES?'flex':'none'};
+  align-items:center;gap:24px;padding:0 32px;font:500 ${V?34:30}px P"><span class="tc" style="font:600 22px P;color:var(--lime);min-width:120px"></span><span class="ln"></span>
+  <span class="nx" style="margin-left:auto;font:400 20px P;opacity:.6;max-width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div>`);
+function drawCues(t){
+  if(!CUES) return; const L = window.VO[CUT==='15'?'15':'master'];
+  const cur = L.find(c=>t>=c.a-0.35 && t<c.b+0.2), nxt = L.find(c=>c.a>t);
+  prompter.querySelector('.tc').textContent = t.toFixed(1)+' s';
+  const ln = prompter.querySelector('.ln');
+  if(cur){ const hot = t>=cur.keyAt-0.25 && t<cur.keyAt+0.35;
+    ln.innerHTML = cur.text.replace(cur.key, `<b style="color:${hot?'#111':'var(--lime)'};background:${hot?'var(--lime)':'transparent'};border-radius:6px;padding:0 6px">${cur.key}</b>`);
+    ln.style.opacity = t<cur.a ? .5 : 1; }
+  else ln.innerHTML = '<span style="opacity:.45">— silence / image —</span>';
+  prompter.querySelector('.nx').textContent = nxt ? `→ ${nxt.a.toFixed(1)} s « ${nxt.text} »` : '';
+}
+
+/* =====================================================================
+   Moteur de rendu
+   ===================================================================== */
+el(`<div class="grain"></div>`);
+stage.appendChild(sub);
+const safe = el(`<div class="safe"></div>`);
+if (V) css(safe,{left:'60px',right:'140px',top:'220px',bottom:'340px'}); else css(safe,{left:'96px',right:'96px',top:'54px',bottom:'54px'});
+if (Q.get('safe')==='1') safe.style.display='block';
+
+function masterTime(t){
+  if (CUT !== '15') return t;
+  for (const [a,b,m] of MAP15) if (t>=a && t<b) return m + (t-a);
+  return 51.9;
+}
+function render(t){
+  const tm = masterTime(t);
+  for (const s of S){
+    const on = tm>=s.a && tm<s.b;
+    if (!on){ show(s.root,0); continue; }
+    // fondu court d'entrée de 0,2 s (les raccords forts sont gérés dans les scènes)
+    show(s.root, 1);
+    s.upd(tm);
+  }
+  // L'ordre DOM = ordre des scènes : une scène qui commence recouvre la précédente.
+  const list = CUT==='15' ? SUBS15 : SUBS; let txt='';
+  for (const [a,b,s] of list) if (t>=a && t<b) txt=s;
+  sub.textContent = txt; show(sub, txt?1:0);
+  drawCues(t);
+  document.getElementById('hud').textContent = `${CUT==='15'?'15 s':'Maître'} · ${V?'9:16':'16:9'} · ${t.toFixed(2)} s`;
+}
+window.__render = render; window.__dur = DUR;
+if (Q.has('t')) { document.getElementById('hud').style.display='none'; render(parseFloat(Q.get('t'))); }
+else {
+  let t0 = performance.now(), paused=false, pt=0;
+  addEventListener('click',()=>{ paused=!paused; if(!paused) t0=performance.now()-pt*1000; });
+  (function loop(){ if(!paused){ pt=((performance.now()-t0)/1000)%DUR; render(pt);} requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>

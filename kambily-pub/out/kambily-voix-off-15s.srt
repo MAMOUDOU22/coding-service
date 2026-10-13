@@ -1,0 +1,19 @@
+1
+00:00:00,200 --> 00:00:02,750
+Un produit ici… l'autre, là-bas.
+
+2
+00:00:02,800 --> 00:00:06,200
+Sur Kambily : plusieurs boutiques, un seul panier.
+
+3
+00:00:07,100 --> 00:00:10,200
+Et ton colis ne se remet qu'avec ton code.
+
+4
+00:00:12,400 --> 00:00:13,050
+Kambily.
+
+5
+00:00:13,100 --> 00:00:15,200
+Les boutiques d'ici. Un seul panier.
