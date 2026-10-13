@@ -5,8 +5,11 @@
 set -e
 cd "$(dirname "$0")/.."
 python3 render/audio_temp.py
-# Voix : Google TTS si une clé est fournie (GOOGLE_TTS_API_KEY), sinon voix de travail Kokoro.
-if [ -n "${GOOGLE_TTS_API_KEY:-}" ]; then python3 render/vo_google.py; else python3 render/vo_gen.py; fi
+# Voix : Gemini (clé gratuite) > Google Cloud TTS > voix de travail Kokoro.
+if   [ -n "${GEMINI_API_KEY:-}" ];      then python3 render/vo_gemini.py
+elif [ -n "${GOOGLE_API_KEY:-}" ];      then python3 render/vo_gemini.py
+elif [ -n "${GOOGLE_TTS_API_KEY:-}" ];  then python3 render/vo_google.py
+else                                         python3 render/vo_gen.py; fi
 mix(){ v="$1"; bed="$2"; vo="$3"; tmp="${v%.mp4}.tmp.mp4"
   ffmpeg -y -loglevel error -i "$v" -i "$bed" -i "$vo" -map 0:v:0 \
     -filter_complex "\
