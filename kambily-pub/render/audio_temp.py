@@ -166,30 +166,39 @@ def finish(name, mus, sfx, total):
         with wave.open(os.path.join(OUT, f'kambily-temp-{name}-{suffix}.wav'), 'wb') as w:
             w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(data.tobytes())
 
-# ================= FILM MAÎTRE (52 s) =================
-T = 52
+# ================= FILM MAÎTRE (≈90 s) =================
+T = 90
 mus = np.zeros(int(T*SR) + SR); sfx = np.zeros_like(mus)
-amb = ambience(5.6); amb[-int(0.5*SR):] *= np.linspace(1, 0, int(0.5*SR))
+amb = ambience(7.0); amb[-int(0.6*SR):] *= np.linspace(1, 0, int(0.6*SR))
 put(mus, amb, 0)
-put(mus, mallet(nt('A4'), 1.4, 0.16), 0.8)              # repère « Abdalah »
-put(mus, mallet(nt('E5'), 1.4, 0.16), 1.6)              # repère « Tombon (Electro) »
-put(mus, pad([nt('D3'), nt('A3'), nt('D4')], 2.2, amp=0.05, att=1.6, rel=0.3), 3.4)  # convergence
-mus += music(T, 5.4, 46.8, [
-    (5.4, 9.4,   {'mar': .16, 'pad': .05}),                                   # le K, la question
-    (9.4, 17.4,  {'mar': .17, 'pad': .05, 'bass': .26, 'kick': .40, 'shk': .035}),  # vitrines
-    (17.4, 26.4, {'mar': .17, 'pad': .05, 'bass': .28, 'kick': .45, 'shk': .04, 'clap': .09}),
-    (26.4, 29.7, {'mar': .19, 'mar_hi': .09, 'pad': .07, 'bass': .30, 'kick': .50, 'shk': .05, 'clap': .11}),  # temps fort
-    (29.7, 35.2, {'mar': .17, 'pad': .05, 'bass': .28, 'kick': .45, 'shk': .04, 'clap': .09}),
-    (35.2, 41.2, {'mar': .13, 'pad': .06}),                                   # plan humain
-    (41.2, 46.8, {'mar': .18, 'mar_hi': .07, 'pad': .06, 'bass': .30, 'kick': .48, 'shk': .045, 'clap': .10}),
+put(mus, mallet(nt('A4'), 1.4, 0.16), 1.0)            # repère Abdalah
+put(mus, mallet(nt('E5'), 1.4, 0.16), 2.4)            # repère Tombon
+put(mus, pad([nt('D3'), nt('A3'), nt('D4')], 2.4, amp=0.05, att=1.8, rel=0.3), 5.2)   # convergence
+mus += music(T, 6.6, 85.0, [
+    (6.6, 13.4,  {'mar': .16, 'pad': .05}),                                                  # marque + définition
+    (13.4, 19.0, {'mar': .17, 'pad': .05, 'bass': .25, 'kick': .38, 'shk': .03}),            # catégories
+    (19.0, 28.0, {'mar': .17, 'pad': .05, 'bass': .27, 'kick': .44, 'shk': .04, 'clap': .08}),# vitrines
+    (28.0, 37.0, {'mar': .17, 'pad': .05, 'bass': .27, 'kick': .44, 'shk': .04, 'clap': .08}),# produit
+    (37.0, 45.0, {'mar': .19, 'mar_hi': .09, 'pad': .07, 'bass': .30, 'kick': .50, 'shk': .05, 'clap': .11}), # panier (temps fort)
+    (45.0, 61.0, {'mar': .17, 'pad': .05, 'bass': .27, 'kick': .44, 'shk': .04, 'clap': .09}),# livraison + paiement
+    (61.0, 67.4, {'mar': .17, 'mar_hi': .06, 'pad': .06, 'bass': .27, 'kick': .42, 'shk': .04}), # confirmation
+    (67.4, 73.4, {'mar': .15, 'pad': .06, 'bass': .24, 'kick': .36, 'shk': .03}),            # suivi
+    (73.4, 79.6, {'mar': .13, 'pad': .07}),                                                  # confiance (plan humain)
+    (79.6, 85.0, {'mar': .18, 'mar_hi': .07, 'pad': .06, 'bass': .30, 'kick': .48, 'shk': .045, 'clap': .10}), # vendeurs
 ])[:len(mus)]
-logo(mus, 47.5)
-for t in (12.6, 13.7, 14.7, 30.3): put(sfx, tick(), t)                 # vitrines, créneau
-for t in (19.2, 28.4, 31.2, 32.9): put(sfx, tap(), t)                  # taps
-put(sfx, pop(), 20.6)                                                   # arrivée dans le panier
-put(sfx, chime(), 34.0)                                                 # « confirmé »
-for i in range(7): put(sfx, tick(0.07), 36.6 + i*0.35)                 # étapes du suivi
-put(sfx, chime(0.08, 1.0), 39.2)                                        # « Livrée »
+logo(mus, 85.9)
+# --- SFX ---
+for t in (14.6, 15.0): put(sfx, tick(), t)             # catégories en avant
+for t in (20.0, 22.4, 24.8): put(sfx, tick(), t)       # bascule des vitrines
+for t in (35.2,): put(sfx, tap(), t)                   # tap « ajouter au panier »
+put(sfx, pop(), 36.4)                                   # arrivée dans le panier
+put(sfx, tap(), 43.4)                                   # passer au paiement
+for t in (47.6, 51.0): put(sfx, tick(), t)             # créneau / express
+for t in (54.0, 56.4): put(sfx, tick(), t)             # liste, choix Orange Money
+put(sfx, tap(), 59.3)
+put(sfx, chime(), 62.2)                                 # commande confirmée
+for i in range(7): put(sfx, tick(0.07), 68.4 + i*0.55) # étapes du suivi
+put(sfx, chime(0.1, 1.2), 76.8)                        # Livrée / bouclier
 finish('master', mus, sfx, T)
 
 # ================= SPOT 15 s =================

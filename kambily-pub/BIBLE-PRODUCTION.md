@@ -4,24 +4,25 @@ Dossier de production : direction créative, voix off, storyboard, ressources, d
 
 ---
 
-## 0. Ce qui est livré, et ce qui ne l'est pas
+## 0. Ce qui est livré, et ce qui reste à faire
+
+Le film livré est **entièrement animé et sonorisé** : image + voix + musique + effets, monté, synchronisé et exporté. Il est **présentable en l'état** comme première version. Deux éléments restent à « monter en gamme » pour une diffusion officielle : la **voix** (remplacer la voix de synthèse par une comédienne) et la **musique** (passer de la maquette originale à une version finale). Ces remplacements se font **sans refaire l'image**, grâce aux stems séparés.
 
 | Élément | État |
 |---|---|
-| Direction créative, 3 concepts, choix argumenté | ✅ Rédigé (§1–3) |
-| Texte définitif de la voix off et direction de comédienne | ✅ Rédigé (§4) |
-| Minutage de la voix, source unique pilotant le montage | ✅ `animatic/vo-cues.js` |
-| Storyboard de production plan par plan | ✅ §5 et planches `out/planches/` |
-| **Animatique animée**, rendue en vidéo (16:9 et 9:16, 52 s et 15 s) | ✅ `out/*.mp4`. Animation des interfaces complète, plans tournés figurés par des emplacements annotés |
-| Essai voix 0–13 s calé à l'image, avec prompteur | ✅ Image et prompteur : `out/kambily-essai-voix-prompteur-16x9.mp4`. **Sans aucun son**, volontairement : la comédienne enregistre à l'image sans être gênée |
-| Sous-titres synchronisés (.srt) | ✅ `out/kambily-voix-off-50s.srt`, `…-15s.srt` |
-| **Piste voix off** | ❌ **Non produite.** L'environnement de travail ne donne accès ni à une comédienne ni à un moteur de synthèse vocale. Aucune voix n'a été enregistrée ni générée. |
-| Maquette sonore (musique **temporaire**, SFX, logo sonore) | ✅ Intégrée aux 4 MP4 de l'animatique. Composition originale générée par programme (`render/audio_temp.py`), sans échantillon ni morceau existant, donc sans problème de droits. **Ce n'est pas la musique finale** : elle sert à juger le rythme. Mix −14 LUFS, crêtes −1 dBFS |
-| Musique finale et mixage final | ❌ À produire (§7). Pas de ducking dans la maquette, faute de voix |
-| Prises de vues réelles (3 plans) | ❌ À tourner. Fiche de tournage au §9 |
-| Film final | ❌ **Pas encore réalisé.** L'animatique sert de référence de montage, ce n'est pas le film. |
+| Direction créative, 3 concepts, choix argumenté | ✅ §1–3 |
+| Texte définitif de la voix off + direction de jeu + minutage | ✅ §4, `animatic/vo-cues.js` |
+| Storyboard de production plan par plan | ✅ §5 et `out/planches/` |
+| **Film animé complet** (16:9 et 9:16, 90 s explicatif et spot 15 s) | ✅ `out/kambily-animatique-*.mp4`. Film **entièrement animé** : motion design + UI reconstruites + scènes graphiques de marque. Aucun placeholder. |
+| **Voix off** intégrée et synchronisée | ⚠️ ✅ Produite et montée, mais **voix de synthèse neuronale** (modèle open-source Kokoro, voix française `ff_siwis`, licence Apache-2.0). **Ce n'est pas une voix humaine** : à remplacer par une comédienne (§4) pour la version officielle. Stem : `out/audio/kambily-voix-*.wav` |
+| **Musique + effets + logo sonore** | ⚠️ ✅ Intégrés et calés sur le montage, musique **atténuée sous la voix** (ducking). Musique **originale temporaire** générée par programme (`render/audio_temp.py`), sans échantillon ni morceau existant — donc sans problème de droits — **mais ce n'est pas la musique finale** (§7). Mix −14 LUFS / −1 dBFS |
+| Sous-titres synchronisés (.srt) | ✅ `out/kambily-voix-off-90s.srt`, `…-15s.srt` |
+| Essai voix 0–13 s avec prompteur (pour diriger la comédienne) | ✅ `out/kambily-essai-voix-prompteur-16x9.mp4` |
+| **Voix d'une comédienne professionnelle** | ❌ À enregistrer (§4.6). C'est l'amélioration n° 1. |
+| **Musique finale** (sur mesure ou sous licence) | ❌ À produire (§7). |
+| Prises de vues réelles (amélioration **optionnelle**) | ❌ Le film se tient sans tournage ; les 3 moments « humains » sont rendus en scènes graphiques. Fiches de tournage au §9 si vous voulez tourner plus tard. |
 
-**Recommandation voix :** enregistrer une vraie comédienne (§4.6). Aucune voix médiocre n'a été produite pour « remplir » l'animatique, conformément à la directive audio.
+**En clair :** vous pouvez regarder, juger et partager le film maintenant. Avant une diffusion payante, faites enregistrer la voix par une comédienne et finaliser la musique (tout le reste est prêt). Je n'ai pas fait passer la voix de synthèse pour une voix humaine : elle est signalée comme telle ici et dans les noms de fichiers (`voix` = scratch).
 
 ---
 
@@ -57,7 +58,7 @@ La tension narrative la plus universelle pour le public guinéen connecté : **c
 - **Titre de travail :** « Un seul panier »
 - **Idée :** *Les boutiques d'ici, enfin au même endroit.*
 - **Émotion :** passer de « c'est compliqué » à « c'est réglé », avec un sourire, sans euphorie.
-- **Durée maître :** 52 s (deux secondes de plus que la cible de 50 s, pour laisser le logo final stable 3,5 s après la dernière phrase).
+- **Format :** publicité **explicative**. **Durée maître : 90 s.** Le film prend le temps de montrer tout le parcours réel (découvrir, choisir, panier multi-boutiques, livraison, paiement, confirmation, suivi, remise avec le code), puis l'invitation aux commerçants. Le spot de 15 s garde la version « impact ».
 - **Tutoiement acheteur / vouvoiement commerçant.** Le film tutoie l'acheteuse, comme l'app (« ton code », « reçois »), puis passe au « vous » pour les boutiques. Ce changement de registre marque le changement d'audience sans carton explicatif.
 
 ### Slogans proposés
@@ -74,47 +75,54 @@ La tension narrative la plus universelle pour le public guinéen connecté : **c
 
 ## 4. Voix off (pilote du montage)
 
-### 4.1 Texte définitif, film maître
+### 4.1 Texte définitif, film maître (90 s)
 
-| # | Début → fin | Texte | Mot porteur (instant) | Plan / image synchronisée |
+| # | Début → fin | Texte | Mot porteur (instant) | Scène / image synchronisée |
 |---|---|---|---|---|
-| 1 | 0,6 → 1,8 | « Un produit ici… » | *ici* (1,5) | Plan 1 : le repère « Abdalah » apparaît |
-| 2 | 2,2 → 3,6 | « L'autre… là-bas. » | *là-bas* (3,2) | Le second repère « Tombon (Electro) » apparaît loin ; le tracé pointillé les relie |
-| — | 3,6 → 5,4 | *silence, image* | — | Les deux repères convergent ; raccord vers le teal |
-| 3 | 5,4 → 7,4 | « Et si les boutiques venaient à toi ? » | *venaient à toi* (6,8) | Plan 2 : le pictogramme K s'est formé, la question s'affiche |
-| — | 7,4 → 9,8 | *silence, image* | — | Le K devient icône, le téléphone monte, les catégories se construisent |
-| 4 | 9,8 → 12,2 | « Sur Kambily, les boutiques d'ici ont leur vitrine. » | *vitrine* (11,9) | Plan 3 : catégories mises en avant, cartes boutiques qui sortent du téléphone (11,2 → 12,8) |
-| 5 | 12,5 → 16,4 | « Beauté, chaussures, électronique… tu compares, tu choisis. » | *Beauté* 12,6 · *chaussures* 13,7 · *électronique* 14,7 · *tu choisis* 16,0 | Chaque mot fait glisser la vitrine correspondante (Beauté & Soins → Chaussures → Électronique) |
-| 6 | 17,9 → 19,5 | « Ce que tu aimes… tu l'ajoutes. » | *ajoutes* (19,2) | Plan 4 : tap sur « Ajouter au panier » à 19,2, le produit vole vers le panier |
-| — | 19,5 → 24,0 | *respiration* | — | Badge panier 1 → 2, raccord vers le panier |
-| 7 | 24,0 → 26,4 | « Plusieurs boutiques. Un seul panier. » | *un seul panier* (25,6) | Plan 5 : les deux boutiques glissent dans le panier, le bandeau réel « 2 boutiques. Un seul panier. » s'allume |
-| — | 26,4 → 29,7 | *temps fort musical* | — | L'image respire sur le teal |
-| 8 | 29,7 → 31,9 | « Ton créneau. Ton moyen de paiement. » | *paiement* (31,5) | Plan 6 : créneau « Après-midi · 14h-18h » choisi (30,3), volet vers Paiement (31,2) |
-| 9 | 33,4 → 34,4 | « Et c'est confirmé. » | *confirmé* (34,0) | La pastille ✓ éclot (33,7 → 34,2), le code 5348 monte |
-| 10 | 36,0 → 38,6 | « Ton colis ne se remet qu'avec ton code. » | *ton code* (38,2) | Plan 7 (tourné) : la remise du colis, la carte « Votre code de livraison » |
-| — | 38,6 → 41,8 | *silence* | — | Le suivi avance jusqu'à « Livrée ✓ », échange de sourires |
-| 11 | 41,8 → 44,2 | « Vous avez une boutique ? Rejoignez Kambily. » | *Rejoignez Kambily* (43,4) | Plan 8 (tourné) : le gérant emballe, la carte « Tombon (Electro) » apparaît |
-| 12 | 44,6 → 45,4 | « Écrivez-nous. » | *Écrivez-nous* (44,8) | contact@kambily.com apparaît |
-| 13 | 47,5 → 48,1 | « Kambily. » | *Kambily* (47,6) | Plan 9 : les cartes boutiques convergent, le **logo** s'impose à 47,5 |
-| 14 | 48,4 → 50,4 | « Les boutiques d'ici. Un seul panier. » | *un seul panier* (49,8) | L'accroche (48,3) puis www.kambily.com (49,0) ; logo stable jusqu'à 52 s |
+| 1 | 0,7 → 2,2 | « Un produit ici… » | *ici* (1,6) | 1 · Plan de ville : le repère « Abdalah · Beauté » se pose |
+| 2 | 2,7 → 4,6 | « L'autre, à l'autre bout de la ville. » | *l'autre bout* (3,6) | Le repère « Tombon · Électro » apparaît loin, la route pointillée les relie |
+| — | 4,6 → 6,9 | *silence, image* | — | Les deux repères convergent |
+| 3 | 6,9 → 8,7 | « Et si les boutiques venaient à toi ? » | *venaient à toi* (8,0) | 2 · Le pictogramme K se forme sur le teal |
+| 4 | 9,4 → 12,6 | « Kambily, c'est la marketplace des boutiques de chez toi. » | *de chez toi* (12,0) | « kambily » s'affiche sur le mot (9,3), puis la définition (10,0) |
+| 5 | 14,2 → 16,8 | « Tout commence par une envie. » | *envie* (16,2) | 3 · Écran Catégories (libellés et nombres réels), 3 catégories mises en avant |
+| 6 | 19,6 → 22,4 | « Des centaines de produits, des boutiques d'ici. » | *boutiques d'ici* (21,8) | 4 · Vitrine Beauté & Soins ; six cartes boutiques réelles sortent du téléphone |
+| 7 | 23,0 → 26,6 | « Beauté, mode, high-tech : tu compares, tu choisis. » | *Beauté* · *mode* · *high-tech* · *tu choisis* (26,0) | Vitrines Beauté → Chaussures → Électronique, calées sur les mots |
+| 8 | 28,8 → 31,6 | « Sur chaque produit : le prix, et la boutique qui le vend. » | *la boutique* (30,6) | 5 · Fiche produit The Ordinary, 190 000 GNF, boutique Abdalah |
+| 9 | 31,9 → 35,2 | « Pas reçu, cassé ou différent ? Kambily te protège. » | *te protège* (34,4) | L'encadré réel « Pas reçu, différent, cassé ? Kambily prend en charge… » s'allume ; tap « Ajouter au panier » à 35,2 |
+| 10 | 38,2 → 41,4 | « Plusieurs boutiques… » | *Plusieurs boutiques* (40,4) | 6 · Fond teal ; les deux boutiques glissent dans le panier |
+| 11 | 42,0 → 44,4 | « … un seul panier. » | *un seul panier* (43,6) | Le bandeau réel « 2 boutiques. Un seul panier. » ; « Un seul panier. » en lime ; tap « Passer au paiement » |
+| 12 | 45,6 → 49,0 | « On te livre chez toi, à ton heure. » | *chez toi* (48,2) | 7 · Écran Livraison ; créneau « Après-midi · 14h-18h » choisi (47,6) |
+| 13 | 49,4 → 52,6 | « Standard, ou express le jour même. » | *express* (51,8) | « Livraison express · Aujourd'hui » sélectionnée (51,0) |
+| 14 | 53,6 → 57,0 | « Tu paies comme tu veux : Orange Money, MTN, carte… » | *comme tu veux* (55,0) | 8 · Écran Paiement, moyens réels en cascade, Orange Money sélectionné (56,4) |
+| 15 | 57,4 → 60,4 | « … ou en espèces à la livraison. » | *à la livraison* (59,6) | « … ou à la livraison. » ; tap « Payer 4 320 000 GNF » |
+| 16 | 61,6 → 64,4 | « Et voilà : c'est confirmé. » | *confirmé* (63,6) | 9 · « Commande confirmée » : la pastille éclot (62,2), le code 5348 monte |
+| 17 | 68,0 → 71,6 | « Tu la suis étape par étape, jusqu'à ta porte. » | *étape par étape* (70,4) | 10 · Écran Suivi : les 7 étapes réelles s'allument une à une |
+| 18 | 74,0 → 77,6 | « Et ton colis ne se remet qu'avec ton code. » | *ton code* (77,0) | 11 · Scène graphique : maison, colis, carte « Votre code de livraison 5348 », bouclier (76,4), « Livrée ✓ » |
+| 19 | 79,6 → 82,0 | « Vous avez une boutique ? » | *boutique* (81,2) | 12 · Devanture stylisée, store qui se déroule |
+| 20 | 82,6 → 85,0 | « Vendez sur Kambily. » | *Vendez sur Kambily* (83,8) | « Vendez sur Kambily. » + contact@kambily.com |
+| 21 | 85,6 → 86,6 | « Kambily. » | *Kambily* (85,9) | 13 · Les cartes boutiques convergent ; le **logo** s'impose sur le mot |
+| 22 | 87,0 → 89,6 | « Les boutiques d'ici. Un seul panier. » | *un seul panier* (88,8) | Accroche puis www.kambily.com ; logo stable jusqu'à 90 s |
 
-**61 mots en 52 s.** Le débit est volontairement bas (≈ 2,5 mots/s dans les phrases) ; les silences font partie de la mise en scène.
+**≈ 160 mots en 90 s** : débit posé (≈ 2,4 mots/s dans les phrases), avec des respirations entre chaque étape pour laisser lire l'écran.
 
 ### 4.2 Direction de comédienne, phrase par phrase
 
 | # | Intention | Ton / rythme | Mots à appuyer légèrement | Pauses |
 |---|---|---|---|---|
-| 1–2 | **Intrigue.** Elle constate, elle ne vend pas. Comme si elle parlait à une amie, à mi-voix. | Bas, proche du micro, sans sourire marqué. Lent. | *ici* / *là-bas* | Vraie suspension après « ici… » (≈ 0,4 s) et avant « là-bas » (≈ 0,2 s) |
-| 3 | **Ouverture.** La question n'est pas rhétorique, c'est une idée qui naît. | Légère montée, premier sourire perceptible sur *toi*. | *venaient à toi* | Aucune ; laisser mourir la fin |
-| 4 | **Découverte, lumière.** | Plus clair, plus ouvert, un cran plus d'énergie. | *Kambily* (net, naturel), *vitrine* | Micro-pause après « Kambily, » |
-| 5 | **Curiosité, flânerie.** L'énumération se promène, elle ne se récite pas. | Chaque catégorie avec une couleur différente ; « tu compares, tu choisis » posé, complice. | *Beauté*, *chaussures*, *électronique*, *choisis* | ≈ 0,3 s entre les catégories (calées sur les glissements) |
-| 6 | **Plaisir.** | Sourire franc, rythme léger. | *ajoutes* | Suspension après « aimes… » |
-| 7 | **Le message clé.** Assurance calme, pas d'emphase. C'est la phrase qu'on doit retenir. | Deux phrases bien séparées ; la seconde un ton plus bas, conclusive. | *Plusieurs*, *un seul* | ≈ 0,5 s entre les deux phrases |
-| 8 | **Réassurance, clarté.** | Précis, simple, presque informatif mais chaleureux. | *créneau*, *paiement* | ≈ 0,3 s entre les deux segments |
-| 9 | **Satisfaction.** | Court, souriant, sans exclamation. | *confirmé* | — |
-| 10 | **Confiance.** C'est une garantie qu'on donne doucement. | Grave léger, posé, regard « dans les yeux ». | *ton code* | Micro-pause avant « qu'avec » |
-| 11–12 | **Affirmation.** Elle s'adresse maintenant aux commerçants : plus droite, plus directe, sans promesse de résultat. | Un peu plus d'appui, rythme net. | *boutique*, *Rejoignez Kambily* ; « Écrivez-nous » simple et ouvert | ≈ 0,4 s avant « Écrivez-nous » |
-| 13–14 | **Signature.** Calme, assurée, chaleureuse : la marque se pose. | « Kambily. » seul, avec intention, point final net. L'accroche ensuite, plus douce, presque souriante. | *Kambily*, *d'ici*, *un seul* | ≈ 0,3 s après « Kambily. » |
+| 1–2 | **Intrigue.** Elle constate, elle ne vend pas, comme à une amie. | Bas, proche du micro, lent. | *ici* / *l'autre bout* | Vraie suspension après « ici… » |
+| 3 | **Ouverture.** Une idée qui naît. | Légère montée, premier sourire sur *toi*. | *venaient à toi* | Laisser mourir la fin |
+| 4 | **Présentation.** La marque se présente simplement. | Clair, chaleureux, assuré. | *Kambily* (net), *de chez toi* | Micro-pause après « Kambily, » |
+| 5 | **Complicité.** | Doux, presque confidentiel. | *envie* | — |
+| 6–7 | **Découverte, flânerie.** L'énumération se promène. | Plus lumineux ; chaque catégorie avec une couleur différente. | *boutiques d'ici*, *Beauté*, *mode*, *high-tech*, *choisis* | ≈ 0,3 s entre les catégories |
+| 8–9 | **Clarté puis réassurance.** | 8 informatif et simple ; 9 posé, protecteur, sans dramatiser. | *la boutique* ; *te protège* | Petite suspension après la question |
+| 10–11 | **Le message clé.** | Deux temps nets ; « un seul panier » un ton plus bas, conclusif. | *Plusieurs*, *un seul* | ≈ 0,6 s entre les deux |
+| 12–13 | **Service, confiance.** | Rassurant, précis. | *chez toi*, *à ton heure*, *express* | ≈ 0,4 s entre les phrases |
+| 14–15 | **Liberté.** | Léger, souriant ; l'énumération des moyens de paiement reste fluide. | *comme tu veux*, *à la livraison* | Suspension sur « carte… » |
+| 16 | **Satisfaction.** | Court, souriant, sans exclamation. | *confirmé* | — |
+| 17 | **Accompagnement.** | Calme, continu. | *étape par étape*, *ta porte* | — |
+| 18 | **Garantie.** Une promesse donnée doucement. | Grave léger, posé. | *ton code* | Micro-pause avant « qu'avec » |
+| 19–20 | **Invitation aux commerçants.** Plus droite, plus directe, sans promesse de résultat. | Un cran d'appui en plus. | *boutique*, *Vendez sur Kambily* | ≈ 0,5 s entre les deux |
+| 21–22 | **Signature.** Calme, assurée, chaleureuse. | « Kambily. » seul, avec intention. L'accroche plus douce. | *Kambily*, *d'ici*, *un seul* | ≈ 0,4 s après « Kambily. » |
 
 **À éviter absolument :** voix de présentatrice de journal, exclamations, montées systématiques en fin de phrase, accent forcé, ton « pub télé crié ».
 
@@ -130,13 +138,23 @@ La tension narrative la plus universelle pour le public guinéen connecté : **c
 - Grille d'évaluation, notée sur 5 par critère, critère éliminatoire si < 3 : **naturel**, **interprétation**, **prononciation / intelligibilité** (y compris « Kambily »), **adéquation à la marque**, **compatibilité avec le rythme** (les mots porteurs tombent-ils sur leurs instants ?).
 - Droits : cession écrite des droits d'exploitation publicitaire (supports, territoires, durée). **Aucun clonage de voix.**
 
-### 4.5 Si une voix de synthèse devait être utilisée (solution de repli)
+### 4.5 Voix de synthèse utilisée comme scratch (ce qui a été fait ici)
 
-Uniquement si aucune comédienne n'est accessible, et **jamais présentée comme une voix humaine** :
-1. Moteur haut de gamme proposant des voix françaises expressives **sous licence commerciale**.
-2. Générer **phrase par phrase** (14 segments), 4 à 6 prises par phrase, avec les intentions du §4.2 en consigne de style.
-3. Comparer les prises sur l'image (pas seulement à l'oreille), retenir la meilleure de chaque phrase et vérifier la cohérence de timbre et de distance entre les phrases.
-4. Si le résultat reste perceptiblement synthétique sur les phrases 1–2, 7 ou 13–14 : **abandonner et enregistrer une comédienne.**
+La version livrée utilise une **voix de synthèse neuronale open-source** (modèle Kokoro, voix française `ff_siwis`, licence Apache-2.0), générée localement, phrase par phrase, depuis `animatic/vo-cues.js` (`render/vo_gen.py`). Débit et pauses réglés par phrase (§4.2). C'est une **voix de travail**, honnêtement signalée, destinée à entendre le film monté — **pas** la voix officielle.
+
+Ses limites : français européen (pas de couleur ouest-africaine), expressivité plus plate que celle d'une comédienne, « Kambily » prononcé via une graphie de contournement (« Kambili ») car le moteur lit « Kambily » en anglais. **Pour la diffusion : enregistrer une comédienne (§4.6).** Les moteurs commerciaux haut de gamme (voix françaises expressives sous licence) sont une autre option, mais une vraie voix reste préférable.
+
+#### Brancher une voix Google Cloud TTS (prêt, il ne manque que la clé)
+
+L'API Google Text-to-Speech est joignable depuis l'environnement de production ; seule une **clé API** manque. Avec une clé (projet Google Cloud, API Text-to-Speech activée) :
+
+```bash
+export GOOGLE_TTS_API_KEY="…"
+python3 render/vo_google.py --list                 # voir les voix fr-FR (choisir une voix féminine Chirp 3 HD)
+VO_VOICE=fr-FR-Chirp3-HD-Aoede ./render/mix.sh     # régénère la voix + remixe les 4 vidéos
+```
+
+Même minutage, mêmes fichiers : l'image ne change pas. Toute autre source de voix (Flora, comédienne, autre moteur) se branche de la même façon en remplaçant `out/audio/kambily-voix-master.wav` (§4.8).
 
 ### 4.6 Consignes d'enregistrement (séance avec comédienne)
 
@@ -144,13 +162,13 @@ Uniquement si aucune comédienne n'est accessible, et **jamais présentée comme
 - Micro statique à large membrane, anti-pop, distance **constante** de 15 à 20 cm, légèrement hors axe.
 - 48 kHz / 24 bits, crêtes autour de −10 à −6 dBFS, aucun traitement à la prise.
 - La comédienne joue **à l'image** avec le prompteur (le mot-clé surligné indique l'instant visé).
-- Enregistrer : 3 prises complètes en continu (continuité du souffle), puis 2 à 3 prises isolées par phrase, plus 2 alternatives d'intention pour les phrases 7 et 13–14 (plus chaleureuse / plus affirmée).
+- Enregistrer : 3 prises complètes en continu (continuité du souffle), puis 2 à 3 prises isolées par phrase, plus 2 alternatives d'intention pour les phrases 4, 10–11 et 21–22 (plus chaleureuse / plus affirmée).
 - Enregistrer aussi la **version 15 s** (5 phrases, §8.2) ; le débit ne doit pas être accéléré, le texte est déjà raccourci.
 
 ### 4.7 Post-production voix
 
 - Nettoyage léger (bruits de bouche, bruit de fond) sans « effet aquarium ».
-- Respirations naturelles **conservées** quand elles portent le sens (avant 7, avant 10, avant 13) ; aucun souffle ajouté artificiellement.
+- Respirations naturelles **conservées** quand elles portent le sens (avant 4, avant 10, avant 18, avant 21) ; aucun souffle ajouté artificiellement.
 - Filtre passe-haut ≈ 80 Hz, EQ douce (présence + 1 à 2 dB vers 3–5 kHz si nécessaire), de-esser, compression modérée (ratio 2:1 à 3:1, 2–4 dB de réduction). Pas de réverbération perceptible.
 - Raccords entre prises en fondus de 10 à 30 ms sur les silences, jamais au milieu d'un mot.
 
@@ -164,25 +182,27 @@ Le montage lit son minutage dans **`animatic/vo-cues.js`**. Après l'enregistrem
 
 ---
 
-## 5. Storyboard de production (film maître 16:9, 52 s)
+## 5. Storyboard de production (film maître 16:9, 90 s)
 
-Planches : `out/planches/16x9-planXX-*.png` et `9x16-…`. Animation de référence : `out/kambily-animatique-master-16x9.mp4`.
+Planches : `out/planches/16x9-planXX-*.png` et `9x16-…` (une image clé par scène). Film de référence : `out/kambily-animatique-master-16x9.mp4`. Le film est **entièrement animé** ; chaque scène s'enchaîne par un fondu de 0,45 s.
 
-| Plan | TC | Composition / éléments | Caméra | Animation & transition | Texte à l'écran | VO | Musique / SFX | Ressources |
-|---|---|---|---|---|---|---|---|---|
-| **1. Accroche** | 0:00–0:05 | **TOURNÉ.** Conakry, rue commerçante, matin, lumière rasante. Aminata (≈ 27 ans) au bord de la route, téléphone en main. En surimpression, sur la moitié droite : deux cartes boutiques (Abdalah, Tombon (Electro)) reliées par un tracé pointillé. | Plan rapproché taille ; push-out très lent (108 % → 102 %) ; focale 50–85 mm, faible profondeur de champ | Repères qui « posent » (ease back), tracé qui se dessine ; à 3,6 s les repères **convergent** | « Un produit ici. » / « L'autre, là-bas. » (lime) | 1, 2 | Ambiance de rue filtrée, très basse ; une note de marimba feutrée sur chaque repère | Plan tourné, cartes boutiques |
-| **2. La question** | 0:05–0:09 | Fond teal #048B9A plein. Le pictogramme K **officiel** apparaît ; la question au-dessous. | Fixe | **Raccord de forme :** les deux repères fusionnés deviennent le K (rotation −20° → 0°, échelle 0,2 → 1). À 7,4 s le K rétrécit en icône, le téléphone monte, le fond s'éclaircit vers le gris clair | « Et si les boutiques venaient à toi ? » | 3 | Coupure de l'ambiance de rue ; la musique **démarre** (pulse légère) sur l'apparition du K | Pictogramme K vectoriel officiel |
-| **3. Les vitrines** | 0:09–0:17 | Téléphone à droite (tiers), texte à gauche. Écran « Catégories » (libellés et nombres réels), puis les listes Beauté & Soins (196), Chaussures (145), Électronique (125), avec produits, boutiques et prix GNF réels. Six cartes boutiques réelles sortent du téléphone. | Légère poussée latérale ; aucun zoom gratuit | Tuiles qui se construisent en cascade (40 ms) ; mise en avant des 3 catégories ; volets latéraux **calés sur les mots** de la VO | « Des centaines de produits. » / « Des boutiques d'ici. » | 4, 5 | Montée musicale ; un « tick » discret à chaque glissement de vitrine | Captures Catégories, Beauté & Soins, Chaussures, Électronique ; visuels produits HD |
-| **4. Le coup de cœur** | 0:17–0:23 | Fiche produit « The Ordinary — Tonique Exfoliant à l'Acide Glyc… », 190 000 GNF, boutique Abdalah. | Légère respiration d'échelle (96 % → 100 %) | La fiche **s'ouvre depuis sa carte** (clip-path) ; tap sur « Ajouter au panier » ; le produit vole en arc vers l'icône panier ; badge 1 → 2 | « Tu trouves. » / « Tu ajoutes. » | 6 | « Pop » satisfaisant sur l'arrivée dans le panier | Fiche produit réelle de ce produit (capture HD) |
-| **5. L'idée** | 0:23–0:29 | **Fond qui vire au teal** (moment clé). Panier avec deux boutiques : Abdalah (The Ordinary, 190 000) et Tombon (Electro) (HP EliteBook x360 1040 G6, 4 130 000). Bandeau réel « 2 boutiques. Un seul panier. » souligné en lime. | Le téléphone se redresse (rotation 4° → 0°) | Les deux blocs boutiques glissent l'un après l'autre ; titre en deux temps | « Plusieurs boutiques. » / « Un seul panier. » (lime) | 7 | **Temps fort** : la musique s'ouvre après « un seul panier », silence de VO de 3 s | Capture Panier avec 2 boutiques sélectionnées |
-| **6. Le parcours** | 0:29–0:35 | Écrans Livraison → Paiement → Commande confirmée (stepper 1-2-3 réel). Total calculé : 4 320 000 GNF. | Fixe | Volets horizontaux rapides (0,4 s) ; créneau « Après-midi · 14h-18h » choisi ; liste des moyens de paiement réels en cascade, Orange Money sélectionné ; pastille ✓ qui éclot, code 5348 | « Ton créneau. » / « Mobile money, carte ou à la livraison. » / « Confirmé. » | 8, 9 | Trois clics d'interface feutrés ; « chime » doux sur ✓ | Captures Livraison, Paiement, Commande confirmée |
-| **7. La preuve** | 0:35–0:41 | **TOURNÉ.** Devant chez Aminata, après-midi. Livreur en polo Kambily (vu sur la bannière officielle). Insert : elle montre le code, il le saisit. Carte UI « Votre code de livraison 5348 » + barre de suivi (7 étapes réelles) jusqu'à « Livrée ✓ ». | Champ / contrechamp ; insert main et téléphone en macro | Carte UI qui monte ; la barre de suivi progresse étape par étape | « Ton code. » / « Ton colis. » (lime) | 10 | Ambiance de quartier douce ; la musique redescend d'un cran | Plan tourné, polo Kambily, capture Suivi |
-| **8. L'autre côté** | 0:41–0:46 | **TOURNÉ.** Boutique d'électronique : le gérant emballe l'ordinateur et le pose sur des colis prêts, regard caméra. Carte « Tombon (Electro) ». | Travelling avant lent | Carte boutique qui « pose » ; texte en trois temps | « Vous avez une boutique ? » / « Rejoignez Kambily. » / contact@kambily.com | 11, 12 | Remontée d'énergie, plus affirmée | Plan tourné (**autorisation** de la boutique Tombon (Electro) ou d'une autre boutique partenaire réelle) |
-| **9. Signature** | 0:46–0:52 | Fond teal. Six cartes boutiques convergent au centre puis disparaissent ; **logo officiel** (pictogramme + logotype), accroche, URL. | Fixe | Convergence (ease in) → logo (outExpo) **sur le mot « Kambily »** → accroche → URL ; image **stable 3,5 s** | « Les boutiques d'ici. Un seul panier. » / www.kambily.com | 13, 14 | Respiration musicale avant « Kambily » ; **logo sonore** (§7.3) ; fin propre, résonance naturelle | Logo vectoriel officiel |
+| Scène | TC | Composition | Animation | Texte à l'écran | VO | Son |
+|---|---|---|---|---|---|---|
+| **1. Le problème** | 0:00–0:07 | Plan de ville stylisé (rues et îlots teal), deux repères boutiques éloignés reliés par une route pointillée lime | Travelling lent ; repères qui se posent ; à 5,4 s le repère de droite rejoint celui de gauche | « Un produit ici. » / « L'autre, là-bas. » | 1–2 | Ambiance de rue filtrée, notes de marimba sur les repères |
+| **2. La marque** | 0:07–0:14 | Fond teal, pictogramme K officiel, « kambily », définition | Raccord de forme (convergence → K), le K monte, mot « kambily » puis définition ; le téléphone monte, le fond s'éclaircit | « kambily » / « La marketplace des boutiques de chez toi. » | 3–4 | La musique démarre sur le K |
+| **3. L'envie** | 0:13–0:19 | Téléphone (tiers droit), écran Catégories réel | Défilement doux, 3 catégories cerclées (Beauté & Soins, Chaussures, Électronique) | « Tout commence par une envie. » | 5 | Ticks sur les catégories |
+| **4. Les vitrines** | 0:19–0:28 | Listes réelles (produits, boutiques, prix GNF), cartes boutiques autour du téléphone | Volets latéraux calés sur « Beauté », « mode », « high-tech » | « Des centaines de produits. » / « Des boutiques d'ici. » | 6–7 | Ticks sur chaque vitrine |
+| **5. Le produit** | 0:28–0:37 | Fiche produit The Ordinary (190 000 GNF, Abdalah) + encadré réel de protection | Ouverture depuis la carte ; encadré protection souligné ; tap, le produit vole vers le panier | « Le prix. » / « La boutique. » / « Tout est clair. » | 8–9 | Tap, « pop » d'arrivée |
+| **6. Un seul panier** | 0:37–0:45 | Fond qui vire au teal ; panier réel à deux boutiques | Blocs boutiques qui glissent ; bandeau « 2 boutiques. Un seul panier. » souligné ; tap paiement | « Plusieurs boutiques. » / « Un seul panier. » | 10–11 | Temps fort musical |
+| **7. La livraison** | 0:45–0:53 | Écran Livraison réel (modes, par boutique, créneau, code de validation) | Créneau « Après-midi » puis « Express » sélectionnés | « Chez toi, à ton heure. » / « Standard ou express. » | 12–13 | Ticks de sélection |
+| **8. Le paiement** | 0:53–1:01 | Écran Paiement réel, total 4 320 000 GNF | Moyens réels en cascade, Orange Money sélectionné, tap « Payer » | « Comme tu veux : » / « Orange Money, MTN, carte… » / « … ou à la livraison. » | 14–15 | Ticks, tap |
+| **9. Confirmé** | 1:01–1:07 | Écran « Commande confirmée » réel, code 5348 | Pastille qui éclot, code qui monte | « Et voilà. » / « C'est confirmé. » | 16 | Carillon |
+| **10. Le suivi** | 1:07–1:13 | Écran Suivi réel (7 étapes) | Les étapes s'allument une à une, le titre change | « Tu suis ta commande, » / « étape par étape. » | 17 | 7 ticks légers |
+| **11. La confiance** | 1:13–1:19 | Scène graphique : maison, colis déposé, carte « Votre code de livraison », bouclier | Illustration et carte qui montent ; bouclier et « Livrée ✓ » | « Ton code. » / « Ton colis. » | 18 | Musique qui redescend ; carillon doux |
+| **12. Les commerçants** | 1:19–1:25 | Scène graphique : devanture au store lime, colis prêts, enseigne K, carte « Tombon · Électro » | Le store se déroule ; carte et texte en trois temps | « Vous avez une boutique ? » / « Vendez sur Kambily. » / contact@kambily.com | 19–20 | Remontée d'énergie |
+| **13. Signature** | 1:25–1:30 | Fond teal, logo, accroche, URL | Cartes boutiques qui convergent → logo sur « Kambily » → accroche → URL ; logo stable 3,7 s | « Les boutiques d'ici. Un seul panier. » / www.kambily.com | 21–22 | Logo sonore, fin naturelle |
 
-**Règles de raccord entre plans :** pas de coupe au milieu d'une phrase (vérifié dans `vo-cues.js`). Les changements de plan tombent dans les silences (3,6–5,4 · 7,4–9,8 · 19,5–24 · 26,4–29,7 · 34,4–36 · 38,6–41,8 · 45,4–47,5).
-
----
+**Règles de raccord :** aucune coupe au milieu d'une phrase (vérifié dans `vo-cues.js`) ; chaque scène change dans un silence de la voix.
 
 ## 6. Direction artistique
 
@@ -226,7 +246,7 @@ Planches : `out/planches/16x9-planXX-*.png` et `9x16-…`. Animation de référe
 
 - Morceau **sur mesure ou sous licence commerciale vérifiée** (synchro + diffusion sur réseaux sociaux et web, territoire Guinée et monde, durée de la campagne).
 - 100–104 BPM, pop afro contemporaine épurée : basse ronde, percussions sèches, motif de marimba/mallet en deux notes. Pas de *drop* EDM, pas de pastiche.
-- Structure : 0–5 s quasi silence (ambiance) · 5,4 s départ sur le K · 9–17 s montée · **26,4 s ouverture** (temps fort sans voix) · 35–41 s redescente (plan humain) · 41 s remontée · 47 s respiration · logo sonore · fin naturelle à 52 s.
+- Structure (90 s) : 0–7 s ambiance · 6,6 s départ sur le K · 13–37 s montée (découverte, produit) · **37–45 s temps fort** (« un seul panier ») · 45–73 s pulsation régulière (livraison, paiement, confirmation, suivi) · 73–79 s redescente (confiance) · 79 s remontée (commerçants) · logo sonore à 85,9 s · fin naturelle à 90 s.
 - La musique est **atténuée de 8 à 10 dB sous la voix** (ducking doux), avec un creux EQ de 2–3 dB vers 2–4 kHz.
 
 ### 7.2 Effets sonores
@@ -247,19 +267,19 @@ Deux notes de mallet (grave puis aiguë, comme le grand et le petit quart de cer
 
 ## 8. Déclinaisons
 
-### 8.1 Film maître : 52 s, 16:9 et 9:16 (voir §5)
+### 8.1 Film maître explicatif : 90 s, 16:9 et 9:16 (voir §5)
 
 ### 8.2 Spot 15 s, un remontage narratif (pas une accélération)
 
 La structure problème → solution → preuve → marque est conservée :
 
-| TC | Plan (source maître) | VO | Texte |
+| TC | Scène (source maître) | VO | Texte |
 |---|---|---|---|
-| 0:00–2,6 | Accroche (plan 1) | « Un produit ici… l'autre, là-bas. » | Un produit ici. / L'autre, là-bas. |
-| 2,6–6,6 | Panier (plan 5) | « Sur Kambily : plusieurs boutiques, un seul panier. » | Plusieurs boutiques. / Un seul panier. |
-| 6,6–9,6 | Confirmation + code (plan 6) | « Et ton colis ne se remet qu'avec ton code. » | Confirmé. |
-| 9,6–11,4 | Remise du colis (plan 7) | *(fin de phrase)* | Ton code. / Ton colis. |
-| 11,4–15 | Signature (plan 9) | « Kambily. Les boutiques d'ici. Un seul panier. » | Logo, accroche, URL |
+| 0:00–2,6 | Le problème (scène 1) | « Un produit ici, l'autre ailleurs. » | Un produit ici. / L'autre, là-bas. |
+| 2,6–6,6 | Un seul panier (scène 6) | « Sur Kambily : plusieurs boutiques, un seul panier. » | Plusieurs boutiques. / Un seul panier. |
+| 6,6–9,6 | Confirmé (scène 9) | « Et ton colis ne se remet qu'avec ton code. » | C'est confirmé. |
+| 9,6–11,4 | La confiance (scène 11) | *(fin de phrase)* | Ton code. / Ton colis. |
+| 11,4–15 | Signature (scène 13) | « Kambily. Les boutiques d'ici. Un seul panier. » | Logo, accroche, URL |
 
 Fichiers : `out/kambily-animatique-15-16x9.mp4` et `…-15-9x16.mp4`.
 
@@ -301,7 +321,7 @@ Fichiers : `out/kambily-animatique-15-16x9.mp4` et `…-15-9x16.mp4`.
 
 1. **Valider l'essai voix** (13 s), puis enregistrer la voix complète **avant** l'animation finale.
 2. Reporter le minutage réel dans `vo-cues.js`, rendre l'animatique recalée, puis faire valider le rythme par KAMBILY.
-3. **Tournage** (1 journée, Conakry, équipe légère) : 3 décors, lumière naturelle, caméra en 4K 25 i/s, Log, optiques fixes 35/50/85 mm, macro pour les inserts téléphone (écran en vert ou éteint, l'UI est réincrustée).
+3. **Tournage (optionnel)** : le film se tient sans prises de vues. Si vous voulez une présence humaine, 1 journée à Conakry suffit pour remplacer les scènes 1, 11 et 12 (fiches au §9.3) : lumière naturelle, 4K 25 i/s, Log, optiques fixes 35/50/85 mm, macro pour les inserts téléphone (l'UI est réincrustée).
 4. **Motion** dans After Effects (ou équivalent) :
    - Composition maître 1920 × 1080 à 25 i/s et composition 1080 × 1920 **construite séparément** (même précompositions d'écrans, mises en page distinctes).
    - Écrans reconstruits en vectoriel à partir des captures HD (police Poppins, libellés **identiques**), une précomposition par écran.
@@ -390,7 +410,7 @@ Fichiers : `out/kambily-animatique-15-16x9.mp4` et `…-15-9x16.mp4`.
 kambily-pub/
 ├── BIBLE-PRODUCTION.md          ← ce document
 ├── animatic/
-│   ├── index.html               ← animatique (moteur d'animation, une fonction par plan)
+│   ├── index.html               ← film animé (moteur d'animation, une fonction par plan)
 │   ├── vo-cues.js               ← minutage voix : source unique pour le montage et les sous-titres
 │   └── assets/                  ← pictogramme extrait du fichier fourni, recadrages produits, Poppins
 ├── render/
@@ -398,15 +418,19 @@ kambily-pub/
 │   ├── render.mjs               ← rendu image par image (Playwright + ffmpeg)
 │   ├── stills.mjs               ← planches du storyboard
 │   ├── srt.mjs                  ← sous-titres .srt
-│   ├── audio_temp.py            ← maquette sonore (musique temporaire, SFX, logo sonore)
-│   └── mux.sh                   ← ajoute la maquette sonore aux MP4 (−14 LUFS)
+│   ├── audio_temp.py            ← musique temporaire + SFX + logo sonore (synthèse programmée)
+│   ├── vo_gen.py                ← voix off scratch (Kokoro ff_siwis) depuis vo-cues.js
+│   ├── mux.sh                   ← ajoute musique+SFX seuls aux MP4 (version muette de voix)
+│   └── mix.sh                   ← mixe voix + musique + SFX (ducking) dans les MP4 → version sonorisée
 └── out/
-    ├── kambily-animatique-master-16x9.mp4 / -9x16.mp4   (52 s)
+    ├── kambily-animatique-master-16x9.mp4 / -9x16.mp4   (90 s, explicatif)
     ├── kambily-animatique-15-16x9.mp4 / -9x16.mp4       (15 s)
     ├── kambily-essai-voix-prompteur-16x9.mp4            (13 s, prompteur pour la comédienne)
-    ├── kambily-voix-off-50s.srt / -15s.srt
+    ├── kambily-voix-off-90s.srt / -15s.srt
+    ├── audio/                                           (stems : voix, musique, SFX, mix — régénérables)
     └── planches/                                        (images clés, 16:9 et 9:16)
 ```
 
 - **Visualiser :** ouvrir `animatic/index.html?format=16x9` (ou `9x16`, `&cut=15`, `&cues=1`, `&safe=1`) dans un navigateur ; un clic met en pause.
-- **Rendre :** `./render/all.sh` puis `./render/mux.sh` (nécessite Node 18+, Playwright, Chromium, ffmpeg, Python 3 et numpy). Les stems WAV (musique, SFX, mix) sont écrits dans `out/audio/`.
+- **Rendre l'image :** `./render/all.sh`. **Sonoriser (voix+musique+SFX) :** `./render/mix.sh`. Nécessite Node 18+, Playwright, Chromium, ffmpeg, Python 3, numpy, soundfile, `kokoro-onnx` (+ modèle) et espeak-ng. Les stems WAV sont écrits dans `out/audio/`.
+- **Remplacer la voix de synthèse par une comédienne :** déposer le nouvel enregistrement à la place de `out/audio/kambily-voix-master.wav` (48 kHz, mêmes départs de phrases, cf. §4.8) puis relancer `./render/mix.sh`. L'image ne change pas.
